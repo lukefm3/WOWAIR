@@ -244,7 +244,7 @@ plot <- ggplot(cumul_df, aes(x = date, y = value, color = PrePeriodStart)) +
       l = 25     # ← larger left margin
     )
   )
-ggsave("Additional Tables and Figures/time_callibration.png", plot = plot, width = 9, height = 5.5, dpi = 500)
+ggsave("Main Figures and Tables/time_callibration.png", plot = plot, width = 9, height = 5.5, dpi = 500)
 
 
 
@@ -467,6 +467,7 @@ latex_table <- paste0(
   "    \\bottomrule\n",
   "    \\end{tabular}%\n",
   "}\n",
+  "\\tiny",
   "\\begin{tablenotes}[Source:]\n",
   "1. Globefeed.com, 2. US Naval Observatory Astronomical Applications Department, 3. Nordicstatistics.org, 4. World Bank\n",
   "\\end{tablenotes}\n",

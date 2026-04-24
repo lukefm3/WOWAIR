@@ -151,15 +151,27 @@ latex_tbl <- specialization_out %>%
       "\\% Change, 2010-2018",
       "\\% Change, 2018-2019"
     ),
-    caption = "Iceland Sectoral Employment Concentration",
-    label = "tab:specialization"
+    caption = "Iceland Sectoral Employment Concentration"
   ) %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   pack_rows("\\textbf{Tourists per Worker}", 1, 1, escape = FALSE) %>%
   pack_rows("\\textbf{Employment Breakdown By Tourism Sector}", 2, 8, escape = FALSE)
 
-# print to console
-cat(latex_tbl)
 
-# save to .tex file
-writeLines(latex_tbl, "Main Figures and Tables/specialization.tex")
+
+
+# Split into lines
+latex_lines <- strsplit(latex_tbl, "\n")[[1]]
+
+# Remove only exact wrapper/caption/centering lines
+latex_lines <- latex_lines[
+  !grepl("^\\\\begin\\{table\\}", latex_lines) &
+    !grepl("^\\\\end\\{table\\}", latex_lines) &
+    !grepl("^\\\\centering$", latex_lines) &
+    !grepl("^\\\\caption\\{", latex_lines)
+]
+
+# Save cleaned table
+writeLines(latex_lines, "Main Figures and Tables/specialization.tex")
+
+

@@ -109,8 +109,7 @@ causal <- function(complete, dep, exclude,train_start,train_end,treat_end,series
   
   ribbondata <- data.frame(synth[,c(1,5,6)])
   synth_df <- synth
-  synth <- ts(synth[,-1], start = c(year(min(synth[,1])), month(min(synth[,1]))), frequency = 12)
-  
+  synth <- ts(synth[,-1], start = c(year(min(synth[,1])), month(min(synth[,1]))), frequency = 12)  
   
   treat_start <- as.numeric(year(treat_start)) + as.numeric(format(as.Date(treat_start), "%j")) / ifelse(leap_year(as.Date(treat_start)), 366, 365)
   
@@ -122,7 +121,11 @@ causal <- function(complete, dep, exclude,train_start,train_end,treat_end,series
   
   plot_ts <- autoplot(synth[,c(1,2,5,6)]) + ggtitle("Impact Assesment Assesment Using Only Covariates")+
     labs(x="Date", y="Monthly Passengers") + geom_vline(xintercept = treat_start)+ geom_vline(xintercept = train_end)+
-    annotate("text", x = treat_start, y = max(synth[,c(2)]), label = "Intervention-", hjust = 1)
+    annotate("text",
+             x = treat_start + 0.15,
+             y = max(synth[,3], na.rm = TRUE),
+             label = "- Bankruptcy",
+             hjust = 0)
   
   
   plot_differences <- autoplot(synth[,c(3)]) +
@@ -141,11 +144,11 @@ causal <- function(complete, dep, exclude,train_start,train_end,treat_end,series
     
     # raining Period Stopped → LEFT side, LOWER
     annotate("text",
-             x = train_end,
-             y = min(synth[,3], na.rm = TRUE),
+             x = train_end - 0.15,
+             y = min(synth[,3], na.rm = TRUE) * 0.85,
              label = "Training Period Stopped -",
-             hjust = 1.05,     # push left
-             vjust = 20)     # push down
+             hjust = 1,
+             vjust = 1)
   
   plot_cumul_differences <- autoplot(synth[,c(4)]) + ggtitle("Cumulative Differences")+ labs(x="Date", y="Passengers") + geom_vline(xintercept = treat_start)+ geom_vline(xintercept = train_end)+  
     annotate("text",
@@ -176,14 +179,14 @@ month_passengers <- month[,c(tourism_list)]
 temp <- causal(month_passengers, 3,"iceland",'2014-01-01','2019-01-01','2019-12-01','2014-01-01','2019-04-01',.01)
 
 plot <- temp$plot_differences
-ggsave("dropped_time_series_differences.png", plot = plot, dpi=500)
+ggsave("Main Figures and Tables/dropped_time_series_differences.png", plot = plot, dpi=500)
 
 plot <- temp$plot_ts
 plot
-ggsave("no_time_series_plot.png", plot = plot, dpi=500)
+ggsave("Main Figures and Tables/no_time_series_plot.png", plot = plot, dpi=500)
 
 plot <- temp$plot_cumul_differences
-ggsave("dropped_time_series_cumul_difs.png", plot = plot, dpi=500)
+ggsave("Main Figures and Tables/dropped_time_series_cumul_difs.png", plot = plot, dpi=500)
 
 
 temp$plot_differences

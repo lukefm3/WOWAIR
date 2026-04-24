@@ -157,9 +157,26 @@ enet_table <- table_func_avg_yoy(impact_temp, "Total Employees Not in Airline In
 employee_impact<- grid.arrange(u1,u2, ncol=2)
 
 ggsave("Main Figures and Tables/national_labor_plot.png",employee_impact, width=10,height=5, units="in")
+
+
+employee_impact <- (u1 | u2) +
+  plot_layout(widths = c(1, 1)) &
+  theme(
+    plot.margin = margin(5, 5, 5, 5),
+    aspect.ratio = 0.65
+  )
+
+ggsave(
+  "Main Figures and Tables/national_labor_plot.png",
+  employee_impact,
+  width = 10,
+  height = 3.5,
+  units = "in",
+  dpi = 500
+)
+
+
 variable_choice <- rbind(u1_table, u2_table)
-
-
 variable_choice$Indicator <- rownames(variable_choice)
 variable_choice <- variable_choice %>% select(Indicator, everything())
 

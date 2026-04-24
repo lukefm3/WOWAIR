@@ -86,7 +86,28 @@ ggsave("Main Figures and Tables/passengers_by_nationality.png",passenger_impact,
 passenger_tables <- rbind(total_t, national_t, foreign_t)
 passenger_tables$Indicator <- rownames(passenger_tables)
 passenger_tables <- passenger_tables %>% select(Indicator, everything())
-writeLines(kable(passenger_tables, caption = "Forecasted Change in Departures by Nationality", format = "latex", row.names = FALSE), "Main Figures and Tables/passenger_nationality.tex")
 
+latex_out <- kable(
+  passenger_tables,
+  caption = "Forecasted Change in Departures by Nationality",
+  format = "latex",
+  row.names = FALSE
+)
 
+# Split into lines
+latex_lines <- strsplit(latex_out, "\n")[[1]]
+
+# Remove only exact wrapper/caption/centering lines
+latex_lines <- latex_lines[
+  !grepl("^\\\\begin\\{table\\}", latex_lines) &
+    !grepl("^\\\\end\\{table\\}", latex_lines) &
+    !grepl("^\\\\centering$", latex_lines) &
+    !grepl("^\\\\caption\\{", latex_lines)
+]
+
+# Save cleaned table
+writeLines(
+  latex_lines,
+  "Main Figures and Tables/passenger_nationality.tex"
+)
 

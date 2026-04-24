@@ -295,6 +295,30 @@ dropped_countries <- dropped_countries %>%
 
 
 
-kable(dropped_countries, caption = "Choice of Control Countries", format = "markdown", row.names = FALSE)
-writeLines(kable(dropped_countries, caption = "Choice of Control Countries", format = "latex", row.names = FALSE), "Main Figures and Tables/choice_of_control_countries.tex")
+#kable(dropped_countries, caption = "Choice of Control Countries", format = "markdown", row.names = FALSE)
+#writeLines(kable(dropped_countries, caption = "Choice of Control Countries", format = "latex", row.names = FALSE), "Main Figures and Tables/choice_of_control_countries.tex")
+
+
+latex_out <- kable(
+  dropped_countries,
+  caption = "Choice of Control Countries",
+  format = "latex",
+  row.names = FALSE
+)
+
+# Split into lines
+latex_lines <- strsplit(latex_out, "\n")[[1]]
+
+# Remove only exact wrapper/caption/centering lines
+latex_lines <- latex_lines[
+  !grepl("^\\\\begin\\{table\\}", latex_lines) &
+    !grepl("^\\\\end\\{table\\}", latex_lines) &
+    !grepl("^\\\\centering$", latex_lines) &
+    !grepl("^\\\\caption\\{", latex_lines)
+]
+
+# Save cleaned table
+writeLines(
+  latex_lines,
+  "Main Figures and Tables/choice_of_control_countries.tex")
 

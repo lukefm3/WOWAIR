@@ -1,7 +1,7 @@
 # Rename Tables, Markdowns, and Graphics
 
 # Table 1: Summary Table
-file.copy(from = "Manually Created Tables/summary_table.tex", to   = "Paper/Tables/Table 1.tex", overwrite = T)
+file.copy(from = "Main Figures and Tables/summary_table.tex", to   = "Paper/Tables/Table 1.tex", overwrite = T)
 
 # Table 2: Varying Information Availability
 file.copy(from = "Manually Created Tables/information_asymmetry.tex", to   = "Paper/Tables/Table 2.tex", overwrite = T)
@@ -44,10 +44,11 @@ file.copy(from = "Main Figures and Tables/arrivals_by_month.png", to   = "Paper/
 
 # Figure 6: Impacts on Passenger Counts by Nationality
 file.copy(from = "Main Figures and Tables/passengers_by_nationality.png", to   = "Paper/Figures/Figure 6.png", overwrite = T)
+file.copy(from = "Main Figures and Tables/passenger_nationality.tex", to   = "Paper/Figures/Figure 6b.tex", overwrite = T)
 
 # Figure 7: (combines a .tex and a .png)
 # Figure 7a:
-file.copy(from = "Main Figures and Tables/national_labor_impact_plot.png", to   = "Paper/Figures/Figure 7a.png", overwrite = T)
+file.copy(from = "Main Figures and Tables/national_labor_plot.png", to   = "Paper/Figures/Figure 7a.png", overwrite = T)
 
 # Figure 7b:
 file.copy(from = "Main Figures and Tables/comprehensive_labor_impact_table.tex", to   = "Paper/Figures/Figure 7b.tex", overwrite = T)

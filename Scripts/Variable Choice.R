@@ -156,6 +156,30 @@ variable_choice <-  variable_choice %>%
 
 
 
-writeLines(kable(variable_choice, caption = "Forecasted Change in Tourism From Different Coefficient Groups", format = "latex", row.names = FALSE), "Main Figures and Tables/choice_of_variables.tex")
+#writeLines(kable(variable_choice, caption = "Forecasted Change in Tourism From Different Coefficient Groups", format = "latex", row.names = FALSE), "Main Figures and Tables/choice_of_variables.tex")
+
+
+
+latex_out <- kable(
+  variable_choice,
+  caption = "Forecasted Change in Tourism From Different Coefficient Groups",
+  format = "latex",
+  row.names = FALSE
+)
+
+# Split into lines
+latex_lines <- strsplit(latex_out, "\n")[[1]]
+
+# Remove only exact wrapper/caption/centering lines
+latex_lines <- latex_lines[
+  !grepl("^\\\\begin\\{table\\}", latex_lines) &
+    !grepl("^\\\\end\\{table\\}", latex_lines) &
+    !grepl("^\\\\centering$", latex_lines) &
+    !grepl("^\\\\caption\\{", latex_lines)
+]
+
+# Save cleaned table
+writeLines(
+  latex_lines,"Main Figures and Tables/choice_of_variables.tex")
 
 
