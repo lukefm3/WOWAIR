@@ -1,0 +1,118 @@
+library(dplyr)
+library(knitr)
+
+# build your formatted output first
+vc_out <- variable_choice %>%
+  mutate(
+    across(
+      c(`9-Month Cumulative Impact`, `95% CI Upper`, `95% CI Lower`, `RMSE (priors)`),
+      ~ format(round(.x, 0), big.mark = ",", scientific = FALSE, trim = TRUE)
+    ),
+    `p-value` = sprintf("%.4f", `p-value`),
+    `Relative Impact (%)` = sprintf("%.2f%s", `Relative Impact (%)`, pstars(`p-value`))
+  )
+
+col_names <- c(
+  "Indicator",
+  "Relative Impact (%)",
+  "9-Month Cumulative Impact",
+  "95% CI Upper",
+  "95% CI Lower",
+  "p-value",
+  "RMSE (priors)"
+)
+
+# escape % only for LaTeX column names
+col_names_latex <- gsub("%", "\\\\%", col_names)
+
+latex_core <- vc_out %>%
+  kable(
+    format = "latex",
+    booktabs = TRUE,
+    escape = FALSE,
+    col.names = col_names_latex,
+    align = c("l", rep("r", 6))
+  )
+
+# remove addlinespace inserted by kable/booktabs
+latex_core <- gsub("\\\\addlinespace\n", "", latex_core, fixed = FALSE)
+latex_core <- gsub("\\\\addlinespace", "", latex_core, fixed = FALSE)
+
+# insert section headers and midrules
+latex_core <- sub(
+  "\\\\midrule",
+  paste0(
+    "\\\\midrule\n",
+    "\\\\multicolumn{7}{c}{\\\\textbf{Primary Result}} \\\\\n",
+    "\\\\midrule"
+  ),
+  latex_core
+)
+
+latex_core <- sub(
+  "Icelandic Passengers",
+  paste0(
+    "Icelandic Passengers",
+    " \\\\\n\\\\midrule\n",
+    "\\\\multicolumn{7}{c}{\\\\textbf{Impact of Bankruptcy on Fish Landing Weight}} \\\\\n",
+    "\\\\midrule\n",
+    "All Indicators"
+  ),
+  latex_core
+)
+
+latex_core <- sub(
+  "Greenland",
+  paste0(
+    "\\\\midrule\n",
+    "\\\\multicolumn{7}{c}{\\\\textbf{Impact of Bankruptcy on Other Countries}} \\\\\n",
+    "\\\\midrule\n",
+    "Greenland"
+  ),
+  latex_core
+)
+
+latex_core <- sub(
+  "Impact in January 2018",
+  paste0(
+    "\\\\midrule\n",
+    "\\\\multicolumn{7}{c}{\\\\textbf{Impact of 2019 Bankruptcy on Iceland for Years Prior}} \\\\\n",
+    "\\\\midrule\n",
+    "Impact in January 2018"
+  ),
+  latex_core
+)
+
+# if you want the row name changed from "All Indicators" to "Fish Landings"
+latex_core <- gsub("All Indicators", "Fish Landings", latex_core, fixed = TRUE)
+
+# wrap tabular in resizebox
+latex_core <- gsub(
+  "\\\\begin\\{tabular\\}",
+  "\\\\resizebox{\\\\textwidth}{!}{%\n\\\\begin{tabular}",
+  latex_core
+)
+
+latex_core <- gsub(
+  "\\\\end\\{tabular\\}",
+  "\\\\end{tabular}%\n}",
+  latex_core
+)
+
+latex_tbl <- paste0(
+  "\\begin{table}[!htbp]
+\\centering
+\\caption{Impacts and Fit Statistics}
+\\label{tab:complete_placebo_panel}
+\\begin{threeparttable}
+", latex_core, "
+\\begin{tablenotes}
+\\footnotesize
+\\item \\textit{Note:} Reported measures by country showing variation in availability and level of detail across topic areas.
+\\end{tablenotes}
+\\end{threeparttable}
+\\end{table}"
+)
+
+writeLines(latex_tbl, "placebo_impact_table.tex")
+cat(latex_tbl)

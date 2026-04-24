@@ -1,0 +1,71 @@
+library(dplyr)
+library(tibble)
+library(knitr)
+library(stringr)
+
+pstars <- function(p) {
+  case_when(
+    p < 0.01 ~ "***",
+    p < 0.05 ~ "**",
+    p < 0.10 ~ "*",
+    TRUE ~ ""
+  )
+}
+
+fmt_pct <- function(x, digits = 2) {
+  paste0(sprintf(paste0("%.", digits, "f"), x * 100), "\\%")
+}
+
+fmt_num <- function(x) {
+  format(round(x, 0), big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+fmt_p <- function(x) {
+  format(signif(x, 2), scientific = TRUE, trim = TRUE)
+}
+
+forecast_tbl <- tibble(
+  `Model Used` = c(
+    "Simple OLS Regression, Time Series Omitted",
+    "BSTS Preferred Model"
+  ),
+  `Loss Percent` = c(
+    paste0(fmt_pct(temp_no_ts$loss_percent), pstars(temp_no_ts$p_value)),
+    paste0(fmt_pct(temp_bsts$loss_percent), pstars(temp_bsts$p_value))
+  ),
+  `Monthly Impact` = c(
+    paste0("-", fmt_num(abs(temp_no_ts$monthly_impact))),
+    paste0("-", fmt_num(abs(temp_bsts$monthly_impact)))
+  ),
+  `Cumulative Impact` = c(
+    paste0("-", fmt_num(abs(temp_no_ts$cumulative_impact))),
+    paste0("-", fmt_num(abs(temp_bsts$cumulative_impact)))
+  ),
+  `P-Value` = c(
+    fmt_p(temp_no_ts$p_value),
+    fmt_p(temp_bsts$p_value)
+  ),
+  `RMSPE` = c(
+    fmt_num(temp_no_ts$root_mspe),
+    fmt_num(temp_bsts$root_mspe)
+  )
+)
+
+tabular_only <- kable(
+  forecast_tbl,
+  format = "latex",
+  booktabs = FALSE,
+  escape = FALSE,
+  align = "l|l|r|r|r|r",
+  col.names = c(
+    "\\textbf{Model Used}",
+    "Loss Percent",
+    "Monthly Impact",
+    "Cumulative Impact",
+    "P-Value",
+    "RMSPE"
+  )
+)
+
+writeLines(tabular_only, "drop_time_series.tex")
+cat(tabular_only)

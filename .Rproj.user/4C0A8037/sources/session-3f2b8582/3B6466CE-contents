@@ -1,0 +1,139 @@
+library(readxl)
+library(dplyr)
+library(stringr)
+
+raw <- read_excel("Data/Summary Table.xlsx", sheet = "Table", col_names = TRUE)
+
+country_cols <- c(
+  "Iceland", "Faroe Islands", "Greenland", "Norway",
+  "Denmark", "Sweden", "Ireland", "UK"
+)
+
+# Keep only the rows needed for the final table
+final <- raw %>%
+  filter(Indicator %in% c(
+    "Nordic Countries",
+    "Distance to Iceland (mi.)",
+    "Seasonality (Difference Between Longest & Shortest Day)",
+    "Population 2018 (million)",
+    "Annual Tourists per Person (2013)",
+    "Annual Tourists per Person (2018)",
+    "5 Year Change in Tourism Per Person",
+    "Fish, Animals, and Animal Products as Export Product Share (2009)"
+  )) %>%
+  select(Indicator, all_of(country_cols))
+
+# Rename row labels to exactly match your target
+final <- final %>%
+  mutate(
+    Indicator = recode(
+      Indicator,
+      "Nordic Countries" = "Nordic Country",
+      "Annual Tourists per Person (2013)" = "Annual Tourists per Capita (2013)",
+      "Annual Tourists per Person (2018)" = "Annual Tourists per Capita (2018)",
+      "5 Year Change in Tourism Per Person" = "5 Year Change in Tourism Per Capita"
+    )
+  )
+
+# Put rows in the exact order you want
+final$Indicator <- factor(
+  final$Indicator,
+  levels = c(
+    "Nordic Country",
+    "Distance to Iceland (mi.)",
+    "Seasonality (Difference Between Longest & Shortest Day)",
+    "Population 2018 (million)",
+    "Annual Tourists per Capita (2013)",
+    "Annual Tourists per Capita (2018)",
+    "5 Year Change in Tourism Per Capita",
+    "Fish, Animals, and Animal Products as Export Product Share (2009)"
+  )
+)
+
+final <- final %>% arrange(Indicator)
+
+# Helper for Excel time fractions -> h:mm
+fmt_daylength <- function(x) {
+  x <- as.numeric(x)
+  mins <- round(x * 24 * 60)
+  h <- mins %/% 60
+  m <- mins %% 60
+  paste0(h, ":", str_pad(m, 2, pad = "0"))
+}
+
+# Convert everything to character first
+final <- final %>%
+  mutate(across(all_of(country_cols), as.character))
+
+# Row-by-row formatting
+final[final$Indicator == "Nordic Country", country_cols] <-
+  lapply(final[final$Indicator == "Nordic Country", country_cols], function(x) {
+    x[is.na(x) | x == "NA"] <- "-"
+    x
+  })
+
+# Force Ireland and UK to "-"
+final[final$Indicator == "Nordic Country", c("Ireland", "UK")] <- list("-", "-")
+
+final[final$Indicator == "Distance to Iceland (mi.)", country_cols] <-
+  lapply(final[final$Indicator == "Distance to Iceland (mi.)", country_cols], function(x) {
+    x_num <- suppressWarnings(as.numeric(x))
+    out <- ifelse(is.na(x_num), "-", as.character(round(x_num, 0)))
+    out
+  })
+
+final[final$Indicator == "Seasonality (Difference Between Longest & Shortest Day)", country_cols] <-
+  lapply(final[final$Indicator == "Seasonality (Difference Between Longest & Shortest Day)", country_cols], fmt_daylength)
+
+for (r in c(
+  "Population 2018 (million)",
+  "Annual Tourists per Capita (2013)",
+  "Annual Tourists per Capita (2018)"
+)) {
+  final[final$Indicator == r, country_cols] <-
+    lapply(final[final$Indicator == r, country_cols], function(x) {
+      formatC(as.numeric(x), format = "f", digits = 2)
+    })
+}
+
+final[final$Indicator == "5 Year Change in Tourism Per Capita", country_cols] <-
+  lapply(final[final$Indicator == "5 Year Change in Tourism Per Capita", country_cols], function(x) {
+    paste0(round(as.numeric(x) * 100), "\\%")
+  })
+
+final[final$Indicator == "Fish, Animals, and Animal Products as Export Product Share (2009)", country_cols] <-
+  lapply(final[final$Indicator == "Fish, Animals, and Animal Products as Export Product Share (2009)", country_cols], function(x) {
+    paste0(round(as.numeric(x) * 100), "\\%")
+  })
+
+# Escape ampersand in the row label for LaTeX
+final$Indicator <- gsub("&", "\\\\&", final$Indicator)
+
+# Build latex rows
+body_rows <- apply(final, 1, function(x) {
+  paste0("    ", paste(x, collapse = " & "), " \\\\")
+})
+
+body_text <- paste(body_rows, collapse = "\n")
+
+latex_table <- paste0(
+  "\\begin{table}[htbp]\n",
+  "\\centering\n",
+  "\\caption{Forecasted Change in Tourism From Different Coefficient Groups}\n",
+  "\\resizebox{\\textwidth}{!}{%\n",
+  "\\begin{tabular}{lcccccccc}\n",
+  "    \\toprule\n",
+  "          & \\textbf{Iceland} & \\textbf{Faroe Islands} & \\textbf{Greenland} & \\textbf{Norway} & \\textbf{Denmark} & \\textbf{Sweden} & \\textbf{Ireland} & \\textbf{UK} \\\\\n",
+  "    \\midrule\n",
+  body_text, "\n",
+  "    \\bottomrule\n",
+  "    \\end{tabular}%\n",
+  "}\n",
+  "\\begin{tablenotes}[Source:]\n",
+  "1. Globefeed.com, 2. US Naval Observatory Astronomical Applications Department, 3. Nordicstatistics.org, 4. World Bank\n",
+  "\\end{tablenotes}\n",
+  "\\end{table}\n"
+)
+
+cat(latex_table)
+writeLines(latex_table, "summary_table.tex")

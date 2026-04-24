@@ -1,0 +1,44 @@
+\begin{table}
+%\caption{Foregone Labor Growth}
+\resizebox{\textwidth}{!}{%
+\centering
+\begin{tabular}[t]{l|l|r|r|r|r|r|r}
+\midrule
+Indicator & Relative Impact (\%) & Average Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & YoY Actual Change (\%) & p-value & RMSE (priors)\\
+\midrule
+\multicolumn{8}{c}{National Level Indicators} \\
+\midrule
+Unemployed Persons & 48.18*** & 2613 & 5654 & 8267 & 32.6203 & 4e-04 & 1263 \\
+Unemployment Rate & 49.62*** & 1 & 3 & 4 & 30.8244 & 8e-04 & 1 \\
+\midrule
+\multicolumn{8}{c}{Employed Persons By Job Sector} \\
+\midrule
+Tourism Employees & -8.09*** & -6010 & 73995 & 67985 & -3.9300 & 0.0002 & 739 \\
+Tourism Employees Excl. Airline & 0.01 & 0 & 345 & 345 & 1.8361 & 0.4989 & 0 \\
+Transportation Employees & -16.51*** & -2653 & 16034 & 13382 & -12.0283 & 0.0002 & 200 \\
+Accommodation Employees & -10.64** & -2052 & 19345 & 17293 & -4.0864 & 0.0010 & 567 \\
+\midrule
+\multicolumn{8}{c}{Tourism-Specific Indicators} \\
+\midrule
+Air Transport Employees & -25.89*** & -1542 & 5953 & 4411 & -20.7585 & 0.0002 & 116 \\
+Accommodation Employees & -9.67** & -775 & 7953 & 7178 & -1.9727 & 0.0030 & 182 \\
+Food \& Beverage Employees & -8.40*** & -939 & 11084 & 10144 & -6.5507 & 0.0006 & 167 \\
+Tour Services Employees & -0.06 & -30 & 10046 & 10016 & 4.2368 & 0.4780 & 49 \\
+Other Tourism Employees & 0.72 & 169 & 32143 & 32311 & 23.0882 & 0.4561 & 36 \\
+\midrule
+\midrule
+\multicolumn{8}{c}{Taxable Wages By Job Sector, ISK (M)} \\
+\midrule
+Taxable Wages (Full Economy) & -2.43 & -2916 & 117902 & 114986 & 3.2016 & 0.1289 & 1233 \\
+Tourism Wages & -6.26** & -2065 & 32710 & 30644 & 0.0254 & 0.0061 & 390 \\
+Transportation Wages & -15.58*** & -1564 & 9960 & 8397 & -8.4788 & 0.0002 & 159 \\
+Accommodation Wages & -7.02** & -448 & 6319 & 5871 & 1.5665 & 0.0091 & 131 \\
+\midrule
+\end{tabular}
+}
+\label{tab:labor_impact}
+\begin{minipage}{\textwidth}
+\tiny
+Notes: The number of stars denotes the significance level of the coefficient estimates based on p-values, where *** indicates $p<0.01$, ** indicates $p<0.05$, and * indicates $p<0.10$.
+\end{minipage}
+\end{table}

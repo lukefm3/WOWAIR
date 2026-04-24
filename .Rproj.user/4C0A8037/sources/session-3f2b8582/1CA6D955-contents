@@ -1,0 +1,49 @@
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(scales)
+library(zoo)
+
+# -----------------------------
+# POINT EFFECTS PLOT
+# -----------------------------
+dif_df <- dif_plot2 %>%
+  as.data.frame() %>%
+  mutate(date = seq(as.Date("2019-04-01"), by = "month", length.out = n())) %>%
+  pivot_longer(-date, names_to = "PrePeriodStart", values_to = "value")
+
+plot <- ggplot(dif_df, aes(x = date, y = value, color = PrePeriodStart)) +
+  geom_line(linewidth = 0.9) +
+  geom_vline(xintercept = as.Date("2019-04-01"), linetype = "dashed") +
+  annotate(
+    "text",
+    x = as.Date("2019-05-01"),
+    y = min(dif_df$value, na.rm = TRUE) * 0.92,
+    label = "WOW Air Closure",
+    color = "black",
+    hjust = 0
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%m/%Y",
+    expand = expansion(mult = c(0.02, 0.06))
+  ) +
+  scale_y_continuous(
+    labels = label_comma(),
+    expand = expansion(mult = c(0.08, 0.15))
+  ) +
+  labs(
+    x = "Month/Year",
+    y = "Departures From Iceland",
+    color = "Pre-Treatment Phase Starts In"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    aspect.ratio = 0.6,
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave("Figure 2.png", plot = plot, width = 9, height = 5.5, dpi = 500)

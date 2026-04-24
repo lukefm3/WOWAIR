@@ -1,0 +1,1109 @@
+---
+title: "CausalImpact Google"
+author: "Luke"
+date: "2023-02-16"
+output: html_document
+---
+
+
+```{r Load Packages, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(pdftools)
+library(data.table)
+library(R.utils)
+library(readr)
+library(readxl)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(forecast)
+
+# FOR Synthetics:
+library(CausalImpact)
+
+```
+
+```{r Data Setup, message=FALSE, warning=FALSE}
+month <- read_excel("Full Excel Sheet/Month/full_monthly_2.xlsx", sheet = "Sheet2")[,-c(3,5)]
+month <- month %>% pivot_wider(names_from=country, values_from=-c("year","month"))
+month$date <- paste0(month$year, "-", month$month, "-01")
+month$date  <- as.Date(month$date)
+month <- month[,-c(1:2)] 
+
+month <- month %>% relocate(date)
+month <- month[,-c(2:4)]
+## Create a couple additional columns
+month$service_employees_iceland <- month$no_employees_iceland - month$non_service_employees_iceland
+month$air_employees_iceland <- month$no_employees_iceland - month$non_air_employees_iceland
+month$service_wages_iceland <- month$taxable_wage_iceland - month$non_service_wages_iceland
+month$air_wages_iceland <- month$taxable_wage_iceland - month$non_air_wages_iceland
+
+complete <- month
+#month <- month[,c(7,6,1:5)]]
+#write.csv(complete, "monthly_ready_to_use.csv")
+
+
+
+
+```
+
+```{r Regression Primary Example, eval=FALSE, include=FALSE}
+####
+# Pick out only the specific column
+####
+
+# what is the selected indicator's column?
+month4 <- month[,7]
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(month))
+month3 <- month[,-c(icelandcolumns)]
+
+month5 <- cbind(month3,month4)
+
+# instead we might have to do this by country: Rename country of the desired to "treatment" then delete all others?
+
+month2 <- month %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+month2 <- month2[,-c(2:4)]
+
+month <- month %>% filter(date > '2015-12-31') %>% filter(date < '2019-12-31') # to do unemployment
+
+
+month_arrival <- month2[ , colSums(is.na(month2))==0] %>% relocate(visitors_iceland) %>% relocate(date)
+# Eliminate NA value Columns
+
+month_unemp <- month[ , colSums(is.na(month))==0] %>% relocate(unemprate_iceland) %>% relocate(date) 
+# Eliminate NA value Columns
+
+
+#month_unemp <- month[,c(1,5,3,4,6,7)] 
+# Rearrange columns correctly & Eliminate other Iceland Data
+###
+# Start with filtering months
+
+month_unemp <- ts(data = month_unemp[-c(1)], # this gets rid of the now useless Date column and the random country columns that appeared out of nowhere
+                             start = 2016,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+
+month_arrival <- ts(data = month_arrival[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period1 <- as.yearmon(c("2014-01-01", "2019-02-01"))
+pre.period2 <- as.yearmon(c("2016-01-01", "2019-02-01"))
+
+post.period <- as.yearmon(c("2019-03-01", "2020-01-01"))
+
+
+impact_unemp <- CausalImpact(month_unemp,pre.period2,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_unemp)
+plot(impact_unemp$model$bsts.model, "coefficients")
+
+impact_arrival <- CausalImpact(month_arrival,pre.period1,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_arrival)
+
+
+summary(impact_arrival)
+plot(impact_arrival)
+summary(impact_arrival, "report")
+
+
+
+```
+
+
+```{r Code to calculate MSPE}
+##
+# Code to calculate the MSPE
+##
+#function(x){ 
+#  impact_mspe <- as.data.frame(impact_temp$series)
+#impact_mspe <- impact_mspe %>% filter(cum.effect == 0)
+#impact_mspe <- impact_mspe %>% filter(cum.effect == 0)
+#View(impact_mspe)
+#  }
+impact_mspe <- as.data.frame(impact_temp$series)
+impact_mspe <- impact_mspe %>% filter(cum.effect == 0)
+impact_mspe <- impact_mspe %>% filter(cum.effect == 0)
+View(impact_mspe)
+```
+
+
+
+
+
+The first Diff-in-diff is essentially an impact check. Can we say that there was even an impact from the closure of WOWAIR? and how big was that primary impact. This will be investigated by analyzing airline passengers in the 9 months post-closure. I also void the month of closure as the closure occured on the 23rd of the month and there is a slight pretrend due to closure of routes in cost-cutting moves by WOWAIR. 
+There is a 99.9% chance of impact that results in 630,000 fewer passengers arriving to iceland in the last 3 quarters of 2019 - a 24% reduction in tourism than anticipated. When spread over the full year, that figure is in agreement with projections at the time of closure, which anticipated a 15% annual reduction in arrivals. 
+
+
+```{r Air Passengers, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,7] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+#complete <- complete[,-c(2:4)]
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(visitors_iceland) %>% relocate(date)
+
+temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2014-01-01", "2019-02-01"))
+post.period <- as.yearmon(c("2019-03-01", "2020-01-01"))
+
+impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Air Passengers After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # Predictors For Air Passengers 
+summary(impact_temp)
+
+```
+
+Now, we check on impacts of Air travel 9 months BEFORE the intervention as a placebo and see that there is, in fact, no significant deviation from the projection over the 9 months. This argues that our model will not project substantial deviations between the counter-factual and actual when no deviation occurs. Essentially suggesting our model is an accurate predictor. 
+
+```{r Air Passenger Placebo Check, warning=FALSE}
+# checking 9 months prior, we see no impact!
+
+complete <- month # Restart the formula
+
+# what is the selected indicator's column?
+complete2 <- complete[,7] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+#complete <- complete[,-c(2:4)]
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(visitors_iceland) %>% relocate(date)
+
+temp<- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-13)
+pre.period <- as.yearmon(c("2014-01-01", "2018-05-01"))
+
+post.period <- as.yearmon(c("2018-06-01", "2019-03-01"))
+
+impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Air Passengers BEFORE Intervention (Placebo)")
+plot(impact_temp$model$bsts.model, "coefficients") # Predictors For Air Passengers 
+summary(impact_temp)
+
+```
+
+```{r Unemployment, warning=FALSE}
+complete <- month # Restart the formula
+
+# what is the selected indicator's column?
+complete2 <- complete[,4] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date >= '2016-01-01') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(unemprate_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2016,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2016-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2020-01-01"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("National Unemployment After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients")  # Predictors For Unnemployment
+summary(impact_temp)
+
+```
+
+```{r Wages, warning=FALSE}
+
+complete <- month # Restart the formula
+
+# what is the selected indicator's column?
+complete2 <- complete[,10] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(taxable_wage_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Reported Taxable Wages After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Taxable Wages
+summary(impact_temp)
+
+
+```
+
+```{r Insolvencies, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,43] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(insolvencies_total_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Iceland Insolvencies After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors For Insolvencies
+summary(impact_temp)
+
+```
+
+```{r insolvencies accomodation, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,49] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(insolvencies_accomodation_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Accomodation Insolvencies After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # Predictors for Accomodation Insolvencies
+summary(impact_temp)
+
+
+```
+
+```{r Nonair wages, eval=FALSE, include=FALSE}
+complete <- month # Restart the formula
+
+# what is the selected indicator's column?
+complete2 <- complete[,19] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(non_air_wages_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Non-Air Wages After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for taxable wages NOT including Airlines
+summary(impact_temp)
+```
+
+```{r Rental Cars, warning=FALSE}
+complete <- month # Restart the formula
+
+# what is the selected indicator's column?
+complete2 <- complete[,37] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(rental_cars_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Rental Car Registrations After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Rental Car Registrations
+summary(impact_temp)
+
+```
+
+As a second Placebo Check, I am investigating a sector that should be exogenous to shocks of the airline industry. I use total weight of fish landed in Iceland. Again, we see no significant deviation from our projection.
+
+```{r First Placebo Check Fishing Catch, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,61] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(landings_weight_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Landings of Fish (kg) Before & After Intervention (Placebo)")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Fish Catch Weight in Iceland
+summary(impact_temp)
+```
+
+```{r Second Placebo Check Imports, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,58] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(imports_local_currency_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Iceland Imports After Intervention (placebo?)")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Icelandic Imports
+summary(impact_temp)
+# less compelling, but I think it makes sense - more connected to local markets
+# another thought - is imports the same as external tourism? decreasing outward flows of tourism?
+```
+
+```{r CPI Dont like this one, eval=FALSE, include=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,52] # change this to pick out your indicator, then just pick your dates
+
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(CPI_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp)
+plot(impact_temp$model$bsts.model, "coefficients") # predictors
+summary(impact_temp)
+```
+
+```{r Total Employed over 24, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,100] # change this to pick out your indicator, then just pick your dates
+colnames(complete2) <- c("over_24_employed_iceland")
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(over_24_employed_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp<- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Change in over 24 employment (survey)")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for over 24 employment
+summary(impact_temp)
+
+```
+
+```{r Total Employed, warning=FALSE}
+# changed this to use registered
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,67] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(registered_employed_persons_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Total Employed Persons After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp)
+
+
+```
+
+```{r Employed in Service}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+#colnames(complete)
+complete2 <- complete[,110] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(service_employees_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Total Service Employed Persons After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp)
+```
+
+```{r Employed in Airlines}
+
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+#colnames(complete)
+complete2 <- complete[,111] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2015-12-31') %>% filter(date < '2019-12-31') 
+###
+# This wasn't catching the big hiring bounce right before the fall so pushed the dates back a bit
+###
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(air_employees_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2016,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons=12))
+#plot(impact_temp) + ggtitle("Total Air Industry Employed Persons After Intervention")
+#plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp)
+plot(impact_temp)
+
+
+############################################################
+# Doing the Exact same thing but with wider dates
+
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+#colnames(complete)
+complete2 <- complete[,111] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') 
+###
+# This wasn't catching the big hiring bounce right before the fall so pushed the dates back a bit
+###
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(air_employees_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp2 <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons=12))
+#plot(impact_temp) + ggtitle("Total Air Industry Employed Persons After Intervention")
+#plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp2)
+plot(impact_temp2)
+
+```
+
+```{r Wages in Service}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+colnames(complete)
+complete2 <- complete[,112] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(service_wages_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Service Wages After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp)
+```
+
+```{r Wages in Airlines}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+#colnames(complete)
+complete2 <- complete[,113] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2015-12-31') %>% filter(date < '2019-12-31') 
+###
+# This wasn't catching the big hiring bounce right before the fall so pushed the dates back a bit
+###
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(air_wages_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2016,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons=12))
+#plot(impact_temp) + ggtitle("Total Air Industry Employed Persons After Intervention")
+#plot(impact_temp$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp)
+plot(impact_temp)
+
+############################################################
+# Doing the Exact same thing but with wider dates
+
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+#colnames(complete)
+complete2 <- complete[,113] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') 
+###
+# This wasn't catching the big hiring bounce right before the fall so pushed the dates back a bit
+###
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(air_wages_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp2 <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons=12))
+#plot(impact_temp) + ggtitle("Total Air Industry Employed Persons After Intervention")
+plot(impact_temp2$model$bsts.model, "coefficients") # predictors for Employment
+summary(impact_temp2)
+plot(impact_temp2)
+```
+
+
+```{r Total Unemployed Under 24, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,85] # change this to pick out your indicator, then just pick your dates
+colnames(complete2) <- c("under_25_unemployed_iceland")
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(under_25_unemployed_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) + ggtitle("Unemployed Persons Under 25")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Under 25 Unemployment
+summary(impact_temp)
+```
+
+```{r Under 24 Hours Worked, warning=FALSE}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,94] # change this to pick out your indicator, then just pick your dates
+colnames(complete2) <- c("Under_24_hours_worked_iceland")
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(Under_24_hours_worked_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+plot(impact_temp) +ggtitle("Under 25, Hours Worked")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Hours Worked
+summary(impact_temp)
+```
+
+```{r Employed Under 25, warning=FALSE}
+# this is registered, not a survey
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,70] # change this to pick out your indicator, then just pick your dates
+colnames(complete2) <- c("under_25_employed_iceland")
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(under_25_employed_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Under 25 Employed Persons")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Under 25 employment
+summary(impact_temp)
+```
+
+```{r Employed Over 25}
+# this is registered, not a survey
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,c(67)]- complete[,c(70)]  # change this to pick out your indicator, then just pick your dates
+colnames(complete2) <- c("Over_25_employed_iceland")
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2011-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(Over_25_employed_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2012,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2012-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Over 25 Employed Persons")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Under 25 employment
+summary(impact_temp)
+
+```
+
+
+```{r Exports}
+complete <- month # Restart the formula
+# what is the selected indicator's column?
+complete2 <- complete[,55] # change this to pick out your indicator, then just pick your dates
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31') # to do arrivals
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(exports_local_currency_iceland) %>% relocate(date)
+
+impact_temp <- ts(data = complete[-c(1)],
+                             start = 2014,
+                             end = 2020,
+                             frequency = 12) %>% head(-1) # need this on ALL of these
+
+
+pre.period <- as.yearmon(c("2014-01-01", "2019-03-01"))
+
+post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period, model.args=list(niter=5000))
+plot(impact_temp) + ggtitle("Exports")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for over 25 employment
+summary(impact_temp)
+
+
+
+```
+
+
+
+
+
+Next to do: Add in unemployment for under 24 versus over 24 Add tax income for government
+
+```{r VAT, warning=FALSE}
+# this is the trickiest one to do, data is bi monthly, so need to make each grouping by monthly
+complete <- month # Restart the formula
+
+bimonthly <- month
+
+bimonthly$bimonthly <- rep(1:(length(rownames(bimonthly))/2), each=2)
+# create column of duuplicated values
+#Filter our to columns with information for the period we are forecasting
+bimonthly <- bimonthly %>% filter(date > '2015-12-31') %>% filter(date < '2019-12-31')
+# 
+bimonthly2 <- bimonthly[,109]
+icelandcolumns <- grep('iceland', colnames(bimonthly))
+bimonthly <- bimonthly[,-c(icelandcolumns)]
+
+bimonthly <- bimonthly[ , colSums(is.na(bimonthly))==0] 
+
+bimonthly <- cbind(bimonthly,bimonthly2)
+# Starting here just go in order. 
+
+bimonthly <- bimonthly %>% dplyr::group_by(bimonthly) %>% summarise(
+  date = min(date), 
+  unemprate_faroe = mean(unemprate_faroe, na.rm=T), 
+  unemprate_greenland = mean(unemprate_greenland, na.rm=T), 
+  visitors_faroe = sum(visitors_faroe,na.rm=T), 
+  visitors_greenland = sum(visitors_greenland, na.rm=T),
+  taxable_wage_faroe = sum(taxable_wage_faroe, na.rm=T),
+  #no_employees_greenland = sum(no_employees_greenland, na.rm=T), # Avoiding duplicates
+  exports_local_currency_faroe = sum(exports_local_currency_faroe, na.rm=T),
+  exports_local_currency_greenland = sum(exports_local_currency_greenland, na.rm=T),
+  imports_local_currency_faroe = sum(imports_local_currency_faroe, na.rm=T),
+  imports_local_currency_greenland = sum(imports_local_currency_greenland, na.rm=T),
+  landings_weight_faroe = sum(landings_weight_faroe, na.rm=T),
+  landings_weight_greenland = sum(landings_weight_greenland, na.rm=T),
+  landings_local_curency_faroe = sum(landings_local_curency_faroe, na.rm=T),
+  landings_local_curency_greenland = sum(landings_local_curency_greenland, na.rm=T),
+  #all_age_unemployed_faroe = mean(all_age_unemployed_faroe, na.rm=T), # avoiding duplicates
+  #all_age_unemplotment_rate_faroe = mean(all_age_unemplotment_rate_faroe, na.rm=T), # avoiding duplicates
+  `16_24_unemplotment_rate_faroe` = mean(`16_24_unemplotment_rate_faroe`, na.rm =T), 
+  `16_24_unemployed_faroe` = mean(`16_24_unemployed_faroe`, na.rm =T),
+  `25_74_unemployed_faroe` = mean(`25_74_unemployed_faroe`, na.rm =T),
+  `25_74_unemployment_rate_faroe` = mean(`25_74_unemployment_rate_faroe`, na.rm =T),
+VAT_total_iceland = mean(VAT_total_iceland, na.rm=T))
+
+bimonthly <- bimonthly[,-1] %>% relocate(VAT_total_iceland) %>% relocate(date)
+bimonthly <- bimonthly[ , colSums(is.na(bimonthly))==0] 
+
+
+impact_temp <- ts(data = bimonthly[-c(1)]) 
+
+
+pre.period <- as.numeric(c(1, 19))
+
+post.period <- as.numeric(c(20,24))
+
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period,model.args=list(niter=5000, nseasons=6))
+
+plot(impact_temp) + ggtitle("Tourism VAT (bi-monthly) Before & After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Tax Revenues
+summary(impact_temp)
+
+#55461 Reduction (millions ISK) ~ 1 krona = .007135
+#600000 Tourist Decline 
+55461
+
+#Implies About
+
+55461*1000000 * .007135 / 
+
+395714235 #USD Lost 395 Million
+
+# approximately 600,000 tourists implies about
+395714235 / 600000
+# Back of the envelope about 659 Dollars Per Tourist lost in revenue to the government
+
+#OR
+55461*1000000 *.007135
+#395714235 in foregone Revenue
+
+#Government Revenue in 2018 was: 1,198.7 Billion ISK
+1198.7*1000000000*.007135
+#8.55 Billion US
+#lost 395714235 Million in Revenue
+395714235/ 8552724500
+# approximate 4.6% of 2018 government revenue
+
+# Comparatively, the Revenue of WOWAIR in 2017 was about 52 Billion ISK
+52000000000*.007135
+# 371 Million USD
+
+
+```
+
+ government was greater than the revenues of wowair alltogether
+ 
+ My Idea Is Basically, If I get CONSISTENT Results when doing a quarterly AND Annual Comparison, then it seems legitimate
+ 
+ 
+ 
+Then quarterly comparison - can probably do this in R with grouping - then just add in quarterly data - check for consistency of results
+
+Then annual comparison - can probably do this in R with grouping - then just add in quarterly data - check for consistency of results AGAIN!
+
+THEN: Do an overall placebo check
+
+Why will this be convincing? 1. Consistency of results with varying lengths of time 2. Indicator Placebos (i.e. fish landings / imports / construction) 3. Placebo across different years
+
+
+```{r Create quarterly Download}
+complete <- month # Restart the formula
+
+quarter <- complete
+
+quarter <- quarter[colSums(is.na(quarter)) < nrow(quarter)] 
+# get rid of NA only Columns
+quarter$quarter <- paste0(year(quarter$date),"/",quarter(quarter$date))
+# create column of duuplicated values
+#Filter our to columns with information for the period we are forecasting
+colnames(quarter)
+quarter <- quarter %>% dplyr::group_by(quarter) %>% summarise(
+  date = min(date), 
+  unemprate_faroe = mean(unemprate_faroe, na.rm=T), 
+  unemprate_greenland = mean(unemprate_greenland, na.rm=T), 
+  visitors_faroe = sum(visitors_faroe,na.rm=T), 
+  visitors_greenland = sum(visitors_greenland, na.rm=T),
+  taxable_wage_faroe = sum(taxable_wage_faroe, na.rm=T),
+  #no_employees_greenland = sum(no_employees_greenland, na.rm=T), # Avoiding duplicates
+  exports_local_currency_faroe = sum(exports_local_currency_faroe, na.rm=T),
+  exports_local_currency_greenland = sum(exports_local_currency_greenland, na.rm=T),
+  imports_local_currency_faroe = sum(imports_local_currency_faroe, na.rm=T),
+  imports_local_currency_greenland = sum(imports_local_currency_greenland, na.rm=T),
+  landings_weight_faroe = sum(landings_weight_faroe, na.rm=T),
+  landings_weight_greenland = sum(landings_weight_greenland, na.rm=T),
+  landings_local_curency_faroe = sum(landings_local_curency_faroe, na.rm=T),
+  landings_local_curency_greenland = sum(landings_local_curency_greenland, na.rm=T),
+  #all_age_unemployed_faroe = mean(all_age_unemployed_faroe, na.rm=T), # avoiding duplicates
+  #all_age_unemplotment_rate_faroe = mean(all_age_unemplotment_rate_faroe, na.rm=T), # avoiding duplicates
+  `16_24_unemplotment_rate_faroe` = mean(`16_24_unemplotment_rate_faroe`, na.rm =T), 
+  `16_24_unemployed_faroe` = mean(`16_24_unemployed_faroe`, na.rm =T),
+  `25_74_unemployed_faroe` = mean(`25_74_unemployed_faroe`, na.rm =T),
+  `25_74_unemployment_rate_faroe` = mean(`25_74_unemployment_rate_faroe`, na.rm =T),
+VAT_total_iceland = mean(VAT_total_iceland, na.rm=T))
+
+bimonthly <- bimonthly[,-1] %>% relocate(VAT_total_iceland) %>% relocate(date)
+bimonthly <- bimonthly[ , colSums(is.na(bimonthly))==0] 
+
+
+impact_temp <- ts(data = bimonthly[-c(1)]) 
+
+
+pre.period <- as.numeric(c(1, 19))
+
+post.period <- as.numeric(c(20,24))
+
+
+impact_temp <- CausalImpact(impact_temp,pre.period, post.period,model.args=list(niter=5000))
+
+plot(impact_temp) + ggtitle("Tourism VAT (bi-monthly) Before & After Intervention")
+plot(impact_temp$model$bsts.model, "coefficients") # predictors for Tax Revenues
+summary(impact_temp)
+
+#64894 Reduction (millions ISK) ~ 1 krona = .007135
+#600000 Tourist Decline 
+
+#Implies About
+
+64894*1000000 *.007135 / 600000
+
+# Back of the envelope about 771 Dollars Per Tourist lost in revenue to the government
+
+#OR
+64894*1000000 *.007135
+#463,018,690 in foregone Revenue
+# 
+#Government Revenue in 2018 was: 1,146.5 Billion ISK
+1146.5*1000000000*.007135
+#8.18 Billion US
+#lost .46 Billion in Revenue
+.46/8.18
+# approximate 5.6% of 2018 government revenue
+
+# Comparatively, the Revenue of WOWAIR in 2017 was about 52 Billion ISK
+52000000000*.007135
+# 371 Million USD
+
+#Basically the loss ot the
+
+
+
+```
+

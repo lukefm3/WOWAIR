@@ -1,0 +1,72 @@
+variable_choice <- rbind(total_t, national_t,foreign_t,
+                         fishing_impact_all,
+                         country_placebo_g, country_placebo_f, country_placebo_d, country_placebo_n,
+                         year_prior_1, year_prior_2)
+
+variable_choice$Indicator <- rownames(variable_choice)
+variable_choice <- variable_choice %>% select(Indicator, everything())
+
+kable(variable_choice, caption = "Placebo Impact", format = "markdown", row.names = FALSE)
+writeLines(kable(variable_choice, caption = "Placebo Impact", format = "markdown", row.names = FALSE), "placebo_table.md")
+
+
+# add stars to the "Relative Impact (%)" column (keep numeric shown to 2 d.p.)
+# format numbers with commas (no change to how you call anything)
+vc_out <- variable_choice %>%
+  mutate(
+    across(
+      c(`9-Month Cumulative Impact`, `95% CI Upper`, `95% CI Lower`, `RMSE (priors)`),
+      ~ ifelse(is.na(.), "", comma(.))
+    ),
+    `p-value` = sprintf("%.4f", `p-value`),
+    `Relative Impact (%)` =
+      sprintf("%.2f%s", `Relative Impact (%)`, pstars(`p-value`))
+  )
+
+col_names <- c(
+  "Indicator",
+  "Relative Impact (%)",
+  "9-Month Cumulative Impact",
+  "95% CI Upper",
+  "95% CI Lower",
+  "p-value",
+  "RMSE (priors)"
+)
+
+# escape % ONLY for LaTeX rendering
+col_names_latex <- gsub("%", "\\\\%", col_names)
+
+
+latex_core <- vc_out %>%
+  kable(
+    format = "latex",
+    booktabs = TRUE,
+    escape = FALSE,   # still needed for ***
+    col.names = col_names_latex,
+    align = c("l", rep("r", 6))
+  )
+
+# wrap manually with threeparttable + caption + notes
+latex_tbl <- paste0(
+  "\\begin{table}[!htbp]
+\\centering
+\\caption{Impacts and Fit Statistics}
+\\begin{threeparttable}
+", latex_core, "
+\\begin{tablenotes}
+\\footnotesize
+\\item \\textit{Note:} Reported measures by country showing variation in availability and level of detail across topic areas.
+\\end{tablenotes}
+\\end{threeparttable}
+\\end{table}"
+)
+
+# write to file
+writeLines(latex_tbl, "placebo_impact_table.tex")
+
+
+
+
+
+
+
