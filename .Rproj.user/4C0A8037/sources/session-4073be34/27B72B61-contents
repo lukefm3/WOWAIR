@@ -68,7 +68,7 @@ names(month) <- trimws(names(month))
 
 
 library(readxl)
-employment_by_economic_sectors_iceland <- read_excel("employment by economic sectors iceland.xlsx", 
+employment_by_economic_sectors_iceland <- read_excel("Data/employment by economic sectors iceland.xlsx", 
                                                      skip = 5, n_max = 162 - 5)
 
 df <- employment_by_economic_sectors_iceland
