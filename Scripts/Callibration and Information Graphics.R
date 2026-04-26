@@ -457,7 +457,7 @@ body_text <- paste(body_rows, collapse = "\n")
 latex_table <- paste0(
   "\\begin{table}[htbp]\n",
   "\\centering\n",
-  "\\caption{Forecasted Change in Tourism From Different Coefficient Groups}\n",
+  "\\caption{Forecasted Change in Tourism From Different Coefficient Groups}\\label{tab:summary_table}\n",
   "\\resizebox{\\textwidth}{!}{%\n",
   "\\begin{tabular}{lcccccccc}\n",
   "    \\toprule\n",
@@ -467,8 +467,7 @@ latex_table <- paste0(
   "    \\bottomrule\n",
   "    \\end{tabular}%\n",
   "}\n",
-  "\\tiny",
-  "\\begin{tablenotes}[Source:]\n",
+  "\\begin{tablenotes}\\tiny[Source:]\n",
   "1. Globefeed.com, 2. US Naval Observatory Astronomical Applications Department, 3. Nordicstatistics.org, 4. World Bank\n",
   "\\end{tablenotes}\n",
   "\\end{table}\n"
