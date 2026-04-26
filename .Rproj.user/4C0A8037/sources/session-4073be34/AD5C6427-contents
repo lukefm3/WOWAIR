@@ -50,8 +50,6 @@ source("Scripts/Placebos - Compile.R")
 # source("Scripts/No TS Elements.R")
 
 
-
-
 # Additional Analysis - Not included in paper
 source("Scripts/Exports and Imports.R")
 source("Scripts/Hotel Stays.R")

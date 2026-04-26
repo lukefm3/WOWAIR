@@ -1,8 +1,11 @@
+colnames(complete)
+
+
 #{r Country Placebo Check Greenland}
 complete <- month[,c(tourism_list)] # Restart the formula
 # what is the selected indicator's column?
 #colnames(complete)[12]
-complete2 <- as.data.frame(complete[64]) # change this to pick out your indicator,
+complete2 <- as.data.frame(complete[97]) # change this to pick out your indicator,
 #then just pick your dates
 colnames(complete2) <- "arrivals_greenland"
 complete <- complete[,-c(grep('iceland', colnames(complete)), grep('greenland', colnames(complete)))]
@@ -31,7 +34,7 @@ country_placebo_g <- table_func(impact_temp, "Greenland")
 complete <- month[,c(tourism_list)] # Restart the formula
 # what is the selected indicator's column?
 #colnames(complete)[12]
-complete2 <- as.data.frame(complete[69]) # change this to pick out your indicator,
+complete2 <- as.data.frame(complete[102]) # change this to pick out your indicator,
 #then just pick your dates
 colnames(complete2) <- "arrivals_faroe"
 complete <- complete[,-c(grep('iceland', colnames(complete)), grep('faroe', colnames(complete)))]
@@ -57,11 +60,14 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 country_placebo_f <- table_func(impact_temp, "Faroe Islands")
 #
 
+
+
+
 #{r Country Placebo Check denmark}
 complete <- month[,c(tourism_list)] # Restart the formula
 # what is the selected indicator's column?
 #colnames(complete)[12]
-complete2 <- as.data.frame(complete[72]) # change this to pick out your indicator,
+complete2 <- as.data.frame(complete[105]) # change this to pick out your indicator,
 #then just pick your dates
 colnames(complete2) <- "arrivals_denmark"
 complete <- complete[,-c(grep('iceland', colnames(complete)), grep('denmark', colnames(complete)))]
@@ -92,7 +98,7 @@ country_placebo_d <- table_func(impact_temp, "Denmark")
 complete <- month[,c(tourism_list)] # Restart the formula
 # what is the selected indicator's column?
 #colnames(complete)[12]
-complete2 <- as.data.frame(complete[77]) # change this to pick out your indicator,
+complete2 <- as.data.frame(complete[104]) # change this to pick out your indicator,
 #then just pick your dates
 colnames(complete2) <- "arrivals_norway"
 complete <- complete[,-c(grep('iceland', colnames(complete)), grep('norway', colnames(complete)))]
