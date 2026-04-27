@@ -202,23 +202,10 @@ The forecasting window begins in April 2019 ($t=n+3$) and continues through Dece
 \label{fig:primary_arrivals_plot}
 \end{figure}
 
-This section begins by analyzing the impact of the WOW Air closure on passenger travel, which provides both the clearest channel through which the bankruptcy affected the economy and an important test of the empirical method. If the modeling approach cannot recover the well-documented reduction in international passengers, confidence in the downstream labor results would be limited. Conversely, demonstrating that the model captures the contraction in passenger flows validates the method and provides a necessary foundation for interpreting the labor outcomes.
+This section begins by analyzing the impact of the WOW Air closure on passenger travel, which provides both the clearest channel through which the bankruptcy affected the economy and an important test of the empirical method. If the modeling approach cannot clearly recover the well-documented reduction in international passengers, confidence in the downstream labor results would be limited. Conversely, demonstrating that the model captures the contraction in passenger flows in situations where we expect it, but not in placebo situations,  validates the method and provides a necessary foundation for interpreting the labor outcomes.
 
-Figure \ref{fig:primary_arrivals_plot} shows the estimated counterfactual number of passengers compared to observed departures as well as the monthly and cumulative differences. In the nine months following the bankruptcy, approximately 2.07 million passengers departed Iceland, compared to a counterfactual estimate of 2.60 million passengers in a synthetic Iceland where the bankruptcy did not occur. This implies about 534,000 fewer passengers than would have been expected, a reduction of roughly 20.5\%. Figure \ref{fig:fig_table_grouped} shows the same results broken down by passenger citizenship. Foreign visitors account for the majority of this decline: relative losses were 4\% larger for foreigners than for Icelandic residents, and in absolute terms the contraction in foreign passengers was nearly four times greater. These patterns align with the expectation that WOW Air’s exit would disproportionately affect international tourism flows with strong implications for lost export revenue. 
+Figure \ref{fig:primary_arrivals_plot} shows the estimated counterfactual number of passengers compared to observed departures as well as the monthly and cumulative differences. In the nine months following the bankruptcy, approximately 2.07 million passengers departed Iceland, compared to a counterfactual estimate of 2.60 million passengers in a synthetic Iceland where the bankruptcy did not occur. This implies about 534,000 fewer passengers than would have been expected, a reduction of roughly 20.6\%. Figure \ref{fig:fig_table_grouped} shows the same results broken down by passenger citizenship. Foreign visitors account for the majority of this decline: relative losses were 4\% larger for foreigners than for Icelandic residents, and in absolute terms the contraction in foreign passengers was nearly four times greater. These patterns align with the expectation that WOW Air’s exit would disproportionately affect international tourism flows with strong implications for lost export revenue. 
 
-\begin{figure}[h]
-\caption{Monthly Arrivals Relative to Counterfactual (\% Higher or Lower Than Expected)}
-\centering
-    \includegraphics[width=\textwidth]{Figures/Figure 5.png}
-\begin{minipage}{\textwidth}
-\footnotesize \tiny \textit{Note:} The solid line shows the estimated monthly percentage difference between observed and counterfactual departures. Shaded areas represent 95\% credible intervals from the Bayesian structural time series model. The table below reports actual, predicted, and difference values for each month.
-\end{minipage}
-\label{fig:monthly_diff_plot}
-\end{figure}
-
-Figure \ref{fig:monthly_diff_plot} further illustrates these effects by expressing departures as a percentage deviation from the model’s counterfactual estimate. The solid line shows observed monthly differences, with the shaded region indicating the 95\% credible interval. Departures remained consistently below expected levels by roughly 15–25\% throughout 2019, with little sign of recovery even toward the end of the year. The table below the plot reports actual, predicted, and difference values for each month, reinforcing that the gap persisted across all months following the collapse.
-
-While this pattern is not formally tested, the results suggest that the lost capacity was not easily substituted by other carriers during this period. This interpretation is consistent with the broader literature on low-cost carriers, which emphasizes that such airlines often stimulate their own demand and serve distinct market segments not readily filled by legacy carriers \citep{alsumairi_2017_a,pulina_2010_have,rey_2011_effect,hongtsui_2017_does,verarebollo_2009_spread,khan_2019_evolving}. Although exploratory, the persistence of the gap indicates that WOW Air played a distinctive role in sustaining international travel demand to and from Iceland, with meaningful implications for the country’s tourism-driven export sector.
 
 \begin{figure}[htbp]
 \caption{Impacts on Passenger Counts by Nationality}
@@ -230,7 +217,7 @@ While this pattern is not formally tested, the results suggest that the lost cap
     \centering
     {\scriptsize \subcaption{Monthly Difference in Observed and Estimated Departures by Nationality}}
     \vspace{-0.5em} % tighten space (works well here)
-    \includegraphics[width=\linewidth]{Figures/Figure 6.png}
+    \includegraphics[width=\linewidth]{Figures/Figure 5.png}
     
     \vspace{0.25em}
 
@@ -253,7 +240,7 @@ While this pattern is not formally tested, the results suggest that the lost cap
     \makeatother
 
     \resizebox{\textwidth}{!}{%
-      \input{Paper/Figures/Figure 6b}%
+      \input{Paper/Figures/Figure 5b}%
     }
 
     \let\table\origtable \let\endtable\origendtable \let\caption\origcaption
@@ -268,7 +255,22 @@ While this pattern is not formally tested, the results suggest that the lost cap
 
 \end{figure}
 
-Because subsequent results build directly on the finding that tourism supply was substantially affected by the bankruptcy and because I utilize the same model and calibration for subsequent outcomes, it is essential that this estimate be robust and credible. To this end, I implement a broad set of placebo and specification checks, detailed in the Appendix. Placebo tests apply the same treatment to outcomes or countries that should be unaffected, providing a check against false positives and helping guard against type II errors. These include assigning the bankruptcy shock to other Nordic countries, to unrelated Icelandic outcomes such as fish landings, and to pre-bankruptcy periods. Only the pre-bankruptcy placebos show notable treatment effects, likely capturing WOW Air’s expansion rather than a true shock, though these estimates are much less precise than the true bankruptcy effect, with placebo results significant at roughly the 1\% level compared to 0.02\% (p=0.0002) for the actual bankruptcy. Robustness tests varying the control countries used, covariate information included, and model specifications all yield consistent null results, and comparison with a two-way fixed effects model shows estimates of similar magnitude, underscoring the reliability of the BSTS approach. Together, these tests reinforce confidence that the observed decline in passengers is causally attributable to the bankruptcy.
+Figure \ref{fig:monthly_diff_plot} further illustrates these effects by expressing departures as a percentage deviation from the model’s counterfactual estimate. The solid line shows observed monthly differences, with the shaded region indicating the 95\% credible interval. Departures remained consistently below expected levels by roughly 15–25\% throughout 2019, with little sign of recovery even toward the end of the year. The table below the plot reports actual, predicted, and difference values for each month, reinforcing that the gap persisted across all months following the collapse.
+
+While this pattern is not formally tested, the results suggest that the lost capacity was not easily substituted by other carriers during this period. This interpretation is consistent with the broader literature on low-cost carriers, which emphasizes that such airlines often stimulate their own demand and serve distinct market segments not readily filled by legacy carriers \citep{alsumairi_2017_a,pulina_2010_have,rey_2011_effect,hongtsui_2017_does,verarebollo_2009_spread,khan_2019_evolving}. Although exploratory, the persistence of the gap indicates that WOW Air played a distinctive role in sustaining international travel demand to and from Iceland, with meaningful implications for the country’s tourism-driven export sector.
+
+\begin{figure}[h]
+\caption{Monthly Arrivals Relative to Counterfactual (\% Higher or Lower Than Expected)}
+\centering
+    \includegraphics[width=\textwidth]{Figures/Figure 6.png}
+\begin{minipage}{\textwidth}
+\footnotesize \tiny \textit{Note:} The solid line shows the estimated monthly percentage difference between observed and counterfactual departures. Shaded areas represent 95\% credible intervals from the Bayesian structural time series model. The table below reports actual, predicted, and difference values for each month.
+\end{minipage}
+\label{fig:monthly_diff_plot}
+\end{figure}
+
+
+Because subsequent results build directly on the finding that tourism supply was substantially affected by the bankruptcy and because I utilize the same model and calibration for remaining outcomes, it is essential that this estimate be robust and credible. To this end, I implement a broad set of placebo and specification checks, detailed in the Appendix. Placebo tests apply the same treatment to outcomes or countries that should be unaffected, providing a check against false positives and helping guard against type I error. These include assigning the bankruptcy shock to other Nordic countries, to unrelated Icelandic outcomes such as fish landings, and to pre-bankruptcy periods. Only the pre-bankruptcy placebos show notable treatment effects, likely capturing WOW Air’s expansion rather than a true shock, though these estimates are much less precise than the true bankruptcy effect, with placebo results significant at roughly the 1\% level compared to 0.02\% (p=0.0002) for the actual bankruptcy. Robustness tests varying the control countries used, covariate information included, and model specifications all yield consistent null results, and comparison with a two-way fixed effects model shows estimates of similar magnitude, underscoring the reliability of the BSTS approach. Together, these tests reinforce confidence that the observed decline in passengers is causally attributable to the bankruptcy.
 
 \subsection{Labor Levels}
 Having shown that the closure of WOW Air resulted in a significant tourism supply shock to Iceland, we may exploit this fact to estimate the impacts to other economic indicators related to tourism and reasonably assume that the bankruptcy was the mechanism for the resulting changes. I turn to the labor market, where the consequence of the supply shock was both immediate and substantial. The following subsections trace the effects on unemployment levels at the national level, across sectors, and through resulting taxable wages, before contextualizing the magnitude of these impacts with pre-shock specialization.
@@ -299,7 +301,6 @@ Having shown that the closure of WOW Air resulted in a significant tourism suppl
   \endgroup
 
   \vspace{0.25em}
-  \parbox{\linewidth}{\footnotesize \textit{Note:} The number of stars denotes the significance level of the coefficient estimates based on p-values, where *** indicates $p<0.01$, ** indicates $p<0.05$, and * indicates $p<0.10$.}
   \label{fig:Labor_Impacts_National_inline}
 \end{subfigure}
 
@@ -319,19 +320,18 @@ Having shown that the closure of WOW Air resulted in a significant tourism suppl
 \end{figure}
 
 \paragraph{Sectoral employment effects.}
-The panel Employed Persons By Job Sector in Figure \ref{fig:national_labor_grouped}a shows that overall tourism employment fell by 8.1\%, or roughly 6,000 jobs per month, relative to the counterfactual. These values represent deviations from the projected growth path rather than true job losses, likely reflecting a combination of foregone employment that would likely have occurred had pre-shock trends continued and actual jobs lost. Air transport experienced the steepest decline in employment at 25.8\% ($-1,540$ jobs), and the broader transport sector fell by 16.5\% ($-2,650$ jobs). For context, WOW Air employed between 1,000 and 1,100 workers at the time of its bankruptcy, and in the counterfactual scenario, continued growth would likely have been expected. Additional labor losses appeared in accommodation ($-10.5\%$) and food \& beverage ($-8.4\%$), though these estimates carry greater statistical uncertainty. Collectively, these results confirm that employment reductions were felt deeply within tourism-related industries.
+The panel Employed Persons By Job Sector in Figure \ref{fig:national_labor_grouped}a shows that overall tourism employment fell by 8.1\%, or roughly 6,000 jobs per month, relative to the counterfactual. These values represent deviations from the projected growth path rather than true job losses, likely reflecting a combination of foregone employment that would likely have occurred had pre-shock trends continued and actual jobs lost. Air transport experienced the steepest decline in employment at 25.9\% ($-1,540$ jobs), and the broader transport sector fell by 16.5\% ($-2,650$ jobs). For context, WOW Air employed between 1,000 and 1,100 workers at the time of its bankruptcy, and in the counterfactual scenario, continued growth would likely have been expected. Additional labor losses appeared in accommodation ($-10.5\%$) and food \& beverage ($-8.4\%$), though these estimates carry greater statistical uncertainty. Collectively, these results confirm that employment reductions were felt deeply within tourism-related industries.
 
 \paragraph{National unemployment response.}
 The sharp contractions in tourism-facing sectors also led to an aggregate rise in national unemployment. Figure \ref{fig:national_labor_grouped}b shows the monthly differences between actual unemployment levels and the synthetic at the national level, while the National Level Indicators panel of Figure \ref{fig:national_labor_grouped}a presents the corresponding estimated effects. The number of unemployed persons increased by 48.5\% relative to the counterfactual, equivalent to about 2,600 additional unemployed workers per month. The unemployment rate rose by 1.3 percentage points, or 49.5\% relative to the counterfactual. These are substantial shifts within a labor force of roughly 200,000 workers, yet they are substantially lower than the projected 6,000 employee decrease in tourism, indicating a likely shift across sectors. As mentioned, because this method measures differences relative to a modeled counterfactual rather than tracking actual losses. Consequently, this approach cannot test for cross-sectoral labor shifts, especially as non-tourism employment and tourism employment are likely endogenous, as the expansion of tourism can contribute to wider job creation across the economy.
 
-Yet, when the effects of the bankruptcy on employment is measured net of tourism, the evidence becomes less precise ($p = 0.0141$). Total non-tourism employment grew relative to the counterfactual, though its composition differs. In simple terms, employment in tourism fell by roughly $3.09\%$ year-over-year (approximately $-4,000$ jobs), while employment outside of tourism rose by about $3.93\%$ ($+2,500$ jobs).
+Yet, when the effects of the bankruptcy on employment is measured net of tourism, the evidence becomes less precise ($p = 0.0141$). Total non-tourism employment grew relative to the counterfactual, though its composition differs. In a simpler measure, employment in tourism fell by roughly $3.9\%$ year-over-year (approximately $-4,000$ jobs), while employment outside of tourism rose by about $3.93\%$ ($+2,500$ jobs).
 
 
 \paragraph{Taxable wages.}
-Employment losses are also reflected in taxable wage data, though the declines are less pronounced at the national level.  The \textbf{Taxable Wages By Job Sector} panel of Table \ref{fig:fig_table_grouped}a  reveals transport wages (inclusive of air transport) fell by 15.6\% (–1.56 billion ISK monthly), while accommodation wages fell by 7.0\%. At the aggregate level, national wages fell by over 2\%, but without statistical significance. The lack of significance could reflect the small scale of tourism employment relative to national employment, or it could speak to the flexibility and substition of hourly labor whereby employees leaving tourism find similar work quickly. Additionally, it could be reflective of unemployment benefits which may have cushioned part of the income loss.  
+Employment losses are also reflected in taxable wage data, though the declines are less pronounced at the national level.  The \textbf{Taxable Wages By Job Sector} panel of Table \ref{fig:fig_table_grouped}a  reveals transport wages (inclusive of air transport) fell by 15.6\% (–1.56 billion ISK monthly), while accommodation wages fell by 7.0\%. At the aggregate level, national wages fell by over 2\%, but without statistical significance. The lack of significance could reflect the small scale of tourism employment relative to national employment, or it could speak to the flexibility and substitution of hourly labor whereby employees leaving tourism find similar work quickly. Additionally, it could be reflective of unemployment benefits which may have cushioned part of the income loss.  
 
-The magnitude of the labor market response is partly explained by Iceland’s high degree of specialization in tourism employment leading into 2019. As shown in Table \ref{tab:specialization}, the share of employees in tourism nearly doubled from 7.8\% in 2010 to 15.0\% in 2018. Sub-sectors such as accommodation (+141\%), tour services (+240\%), and air transport (+91\%) grew especially rapidly. This concentration left the labor market highly exposed to a sudden contraction in arrivals. The WOW Air bankruptcy therefore not only reduced employment in directly affected sectors but also exposed the vulnerability created by the preceding decade of rapid specialization. While Iceland’s degree of tourism specialization may appear unusually high, significantly higher concentrations of touri9sm employment are observed elsewhere, increasing the generalizability of these results. Across the Caribbean, travel and tourism comprise a dominant share of total employment, peaking at 90.7\% in Antigua and Barbuda in 2019, while all of the ten most tourism-dependent economies surpass 50\%.\footnote{Original data from the World Travel and Tourism Council (2019). Available at: \href{https://www.weforum.org/stories/2020/08/destinations-rely-most-on-tourism-travel/}{\textit{weforum.org}}.} These parallels highlight how economies heavily reliant on tourism face amplified labor market risks during shocks to international mobility, underscoring the importance of diversification in sustaining economic resilience.
-
+The magnitude of the labor market response is partly explained by Iceland’s high degree of specialization in tourism employment leading into 2019. As shown in Table \ref{tab:specialization}, the share of employees in tourism nearly doubled from 8\% in 2010 to 15\% in 2018. Sub-sectors such as accommodation (+65\%), tour services (+232\%), and air transport (+87\%) grew especially rapidly as a share of all employment. This concentration left the labor market highly exposed to a sudden contraction in arrivals. As shown, the share of employees in every one of these sub-sectors fell from 2018 into 2019. The WOW Air bankruptcy therefore not only reduced employment in directly affected sectors but also exposed the vulnerability created by the preceding decade of rapid specialization. While Iceland’s degree of tourism specialization may appear unusually high, significantly higher concentrations of tourism employment are observed elsewhere, increasing the generalizability of these results. Across the Caribbean, travel and tourism comprise a dominant share of total employment, peaking at 90.7\% in Antigua and Barbuda in 2019, while all of the ten most tourism-dependent economies surpass 50\%.\footnote{Original data from the World Travel and Tourism Council (2019). Available at: \href{https://www.weforum.org/stories/2020/08/destinations-rely-most-on-tourism-travel/}{\textit{weforum.org}}.} These parallels highlight how economies heavily reliant on tourism face amplified labor market risks during shocks to international mobility, underscoring the importance of diversification in sustaining economic resilience.
 
 \begin{sidewaystable}[!h]
 \centering
@@ -347,8 +347,6 @@ The magnitude of the labor market response is partly explained by Iceland’s hi
 \end{tablenotes}
 \end{sidewaystable}
 
-
-
 \begin{figure}[h]
     \caption{Monthly Differences in Estimated and Realized Labor Levels}
 \centering
@@ -359,14 +357,12 @@ The magnitude of the labor market response is partly explained by Iceland’s hi
 \label{fig:Sectoral Impact Plot}
 \end{figure}
 
-
 \section{Conclusion}\label{sec:conclusion}
 The collapse of WOW Air illustrates how a seemingly narrow, firm-specific event can trigger broader economic disruptions in a small, tourism-dependent economy. The shock spread quickly through the labor market, with consequences significant enough to be visible in aggregate national indicators.  
 
 That WOW Air was a low-cost carrier is particularly notable. Although often viewed as peripheral, such carriers can underpin large volumes of activity by creating new routes and demand that are not easily replaced when withdrawn. This case shows that their exit can reverberate widely, affecting employment, fiscal revenues, and economic stability.  
 
-Beyond documenting realized vulnerability, the study contributes causal evidence to a literature often limited to descriptive indices or correlations between tourism and growth. It highlights how quickly international travel shocks can translate into labor market dislocations and fiscal pressures, underscoring the importance for policymakers of recognizing the risks of over-specialization, strengthening resilience planning, and considering targeted support mechanisms for economies reliant on sustained visitor inflows.
-
+Beyond documenting realized vulnerability, the study contributes causal evidence to a literature often limited to descriptive indices or correlations between tourism and growth. It highlights how quickly international travel shocks can translate into labor market dislocations and fiscal pressures, underscoring the importance for policymakers of recognizing the risks of over-specialization, strengthening resilience planning, and considering targeted support mechanisms for economies reliant on sustained visitor inflows. Further, we demonstrate that there is opportunity to help mitigate a hard bankruptcy and to support the anticipated employment losses in tourism sub-sectors across the region.
 
 % The appendix command is issued once, prior to all appendices, if any.
 \section{Appendix}\label{sec:Appendix}
@@ -392,19 +388,17 @@ Applying the bankruptcy shock to the weight of fish landings yields no statistic
 
 \subsubsection{Treatment on Untreated Country}\label{sec:Placebo2}
 
-Placebo treatments applied to control countries show that the estimated impacts are not replicable outside of Iceland (Table \ref{tab:complete_placebo_panel}, Panel Impact of Bankruptcy on Other Countries). When the 2019 bankruptcy shock is imposed on the Faroe Islands, Denmark, or Norway, the resulting impacts are small in magnitude and statistically insignificant. Greenland represents the exception, with an estimated relative effect of around -7.75\% that is marginally significant. However, given the small scale of the Greenland economy and limited availability of monthly indicators, this may be attributable to data volatility rather than a genuine treatment effect. These findings reinforce that the large and persistent decline in Icelandic passenger volumes is not an artifact of the donor pool construction.
+Placebo treatments applied to control countries show that the estimated impacts are not replicable outside of Iceland (Table \ref{tab:complete_placebo_panel}, Panel Impact of Bankruptcy on Other Countries). When the 2019 bankruptcy shock is imposed on Greenland, Denmark, or Norway, the resulting impacts are small in magnitude and statistically insignificant. The Faroe Islands is not significant, but is large in magnitude with an estimated relative effect of around +9\%. However, given the small scale of the Faroese economy, this is likely attributable to data volatility rather than a genuine treatment effect. These findings reinforce that the large and persistent decline in Icelandic passenger volumes is not detected in the untreated nations, as expected.
 
 \subsubsection{Treatment Years Prior}\label{sec:Placebo3}
 
-When the bankruptcy shock is assigned to earlier years (2017 or 2018), the model produces statistically significant but smaller effects (Table \ref{tab:complete_placebo_panel}, Panel Impact of 2019 Bankruptcy on Iceland for Years Prior). This likely reflects WOW Air’s rapid expansion during those years being treated as an artificial “shock.” While such findings suggest the design can flag structural breaks during periods of growth, the strength of statistical support differs markedly: Placebo effects in earlier years are detected at the 5–10\% significance level, whereas the actual 2019 bankruptcy effect is identified at $p = 0.0002$, representing an effect roughly five to ten times more statistically significant than those observed in earlier periods ($p = 0.015$). This contrast provides further evidence that the observed impacts in 2019 represent a true disruption rather than a modeling artifact. To address residual concerns over time trends, I also present in the Appendix two alternative specifications of the time dynamics, both of which continue to yield a significant estimated impact of the bankruptcy on Icelandic tourism.
-
+When the bankruptcy shock is assigned to earlier years (2017 or 2018), the model detects a marginally statistically significant negative effect for the year 2018 (Table \ref{tab:complete_placebo_panel}, Panel Impact of 2019 Bankruptcy on Iceland for Years Prior). This may reflect an overall cooling of the tourism sector, or perhaps an anticipatory contraction in WOW Air flights, in an effort to avoid bankruptcy. While such findings suggest a potential cooling of the tourism sector prior to 2019, the strength of statistical support differs markedly: placebo effects in earlier years are detected at the 5–10\% significance level, whereas the actual 2019 bankruptcy effect is identified at $p = 0.0002$, representing an effect roughly 350 times times more statistically significant than those observed in earlier periods ($p = 0.07$). This contrast provides further evidence that the observed impacts in 2019 represent a true disruption rather than a modeling artifact. Furthermore, if there was a cooling of tourism demand in 2018, that change in trend is included in the 2019 iteration. To address remaining concerns over time trends, I also present in the Appendix two alternative specifications of the time dynamics, both of which continue to yield a significant estimated impact of the bankruptcy on Icelandic tourism.
 
 \subsection{Robustness Checks}\label{sec:Robustness}
 Another advantage of the Bayesian Structural Time Series (BSTS) model is its flexibility and the ability to test robustness through alternative specifications. Because there are seemingly limitless combinations of model calibrations, I focus on the main finding - predicted total departures from Iceland - and present three robustness exercises: (1) varying the choice of control countries, (2) varying the set of covariates, and (3) estimating a counterfactual without time-series components. We can consider these a test of Type 1 Error. Across all tests, the estimated passenger loss remains large and significant, providing confidence in the primary results.  
 
 \subsubsection{Control Country Selection}\label{sec:robustness1}
-
-First, I vary the set of control countries to ensure that results are not driven by over-specification, or by idiosyncratic behavior in a self-selected control group. Across alternative combinations of Greenland, Faroe Islands, Denmark, and Norway, the estimated relative impact remains between –20.3\% and –28.7\%, with p-values below 0.0002 for all specifications. This suggests the results are not sensitive to which countries are included as controls. See Table \ref{tab:choice_control_Countries}. 
+First, I vary the set of control countries to ensure that results are not driven by over-specification, or by idiosyncratic behavior in a self-selected control group. Across alternative combinations of Greenland, Faroe Islands, Denmark, and Norway, the estimated relative impact remains between –20.3\% and –28.8\%, with p-values below 0.0002 for all specifications. This suggests the results are not sensitive to which countries are included as controls. See Table \ref{tab:choice_control_Countries}. 
 
 
 \begin{table}
@@ -423,7 +417,7 @@ First, I vary the set of control countries to ensure that results are not driven
 
 \subsubsection{Covariate Grouping Selection}\label{sec:robustness2}
 
-Second, I test whether results depend on the grouping of covariates. Referring back to Table \ref{tab:information_asymmetry}, I estimate the model using only tourism-related indicators, and compare it with specifications that include alternative groupings such as transport, wages, or other economic indicators. As shown in Table \ref{tab:choice_control_coeffs}, estimated impacts range from –17.5\% to –24\% regardless of grouping. Extreme values are associated with lower prior fit (higher RMSE), reinforcing the choice to use tourism indicators in the main specification.  
+Second, I test whether results depend on the grouping of covariates. Referring back to Table \ref{tab:information_asymmetry}, I estimate the model using only tourism-related indicators, and compare it with specifications that include alternative groupings such as transport, wages, or other economic indicators. As shown in Table \ref{tab:choice_control_coeffs}, estimated impacts range from –17.5\% to –23.6\% regardless of grouping. Extreme values are associated with lower prior fit (higher RMSE), reinforcing the choice to use tourism indicators in the main specification.  
 
 
 
