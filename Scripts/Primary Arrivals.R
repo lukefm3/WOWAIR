@@ -25,13 +25,26 @@ post.period <- as.yearmon(c("2019-04-01", "2019-12-31"))
 impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
 
 
-ggsave("Main Figures and Tables/primary_arrivals_plot.png", plot(impact_temp) + ggtitle("Icelandic Airline Departures Post WOW Air Bankruptcy")+ theme(plot.title = element_text(size = 12)))
+primary_arrivals_plot <- plot(impact_temp) +
+  ggtitle("Icelandic Airline Departures Post WOW Air Bankruptcy") +
+  theme(
+    plot.title = element_text(size = 12),
+    plot.margin = margin(t = 10, r = 60, b = 10, l = 10)
+  )
+ggsave(
+  "Main Figures and Tables/primary_arrivals_plot.png",
+  plot = primary_arrivals_plot,
+  width = 9,
+  height = 6,
+  units = "in",
+  dpi = 500
+)
 
 # Create the plot
 png("Main Figures and Tables/coefficients_arrivals_plot.png", width = 1200, height = 600)
 par(
   mfrow = c(1, 2),
-  oma = c(1, 20, 1, 6),     # more outer margin on RIGHT
+  oma = c(1, 2, 1, 6),     # more outer margin on RIGHT
   mar = c(2, 6, 2, 4)      # smaller left, bigger right
 )
 coeff_plot(impact_temp, name_cex = 1.3, title_cex = 1.25)

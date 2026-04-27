@@ -127,43 +127,56 @@ causal <- function(complete, dep, exclude,train_start,train_end,treat_end,series
              label = "- Bankruptcy",
              hjust = 0)
   
-  
   plot_differences <- autoplot(synth[,c(3)]) +
     ggtitle("Difference Between Observed & Estimated") +
-    labs(x = "Date", y = "Monthly Passengers") +   # ✅ fix y-axis label
+    labs(x = "Date", y = "Monthly Passengers") +
     geom_vline(xintercept = treat_start) +
     geom_vline(xintercept = train_end) +
     geom_hline(yintercept = 0) +
-    
-    # Intervention label → RIGHT side of line
-    annotate("text",
-             x = treat_start,
-             y = max(synth[,3], na.rm = TRUE),
-             label = "- Bankruptcy",
-             hjust = -0.1) +   # push text to right
-    
-    # raining Period Stopped → LEFT side, LOWER
-    annotate("text",
-             x = train_end - 0.15,
-             y = min(synth[,3], na.rm = TRUE) * 0.85,
-             label = "Training Period Stopped -",
-             hjust = 1,
-             vjust = 1)
+    annotate(
+      "text",
+      x = treat_start,
+      y = max(synth[,3], na.rm = TRUE),
+      label = "- Bankruptcy",
+      hjust = 0
+    ) +
+    annotate(
+      "text",
+      x = train_end - 0.15,
+      y = min(synth[,3], na.rm = TRUE) * 0.85,
+      label = "Training Period Stopped -",
+      hjust = 1,
+      vjust = 1
+    ) +
+    scale_x_continuous(expand = expansion(mult = c(0.03, 0.20))) +
+    theme(
+      plot.margin = margin(t = 10, r = 60, b = 10, l = 10)
+    )
   
-  plot_cumul_differences <- autoplot(synth[,c(4)]) + ggtitle("Cumulative Differences")+ labs(x="Date", y="Passengers") + geom_vline(xintercept = treat_start)+ geom_vline(xintercept = train_end)+  
-    annotate("text",
-             x = treat_start,
-             y = max(synth[,3], na.rm = TRUE),
-             label = "- Bankruptcy",
-             hjust = -0.1) +   # push text to right
-    
-    # raining Period Stopped → LEFT side, LOWER
-    annotate("text",
-             x = train_end,
-             y = min(synth[,3], na.rm = TRUE),
-             label = "Training Period Stopped -",
-             hjust = 1.05,     # push left
-             vjust = 20)     # push down
+  plot_cumul_differences <- autoplot(synth[,c(4)]) +
+    ggtitle("Cumulative Differences") +
+    labs(x = "Date", y = "Passengers") +
+    geom_vline(xintercept = treat_start) +
+    geom_vline(xintercept = train_end) +
+    annotate(
+      "text",
+      x = treat_start,
+      y = max(synth[,4], na.rm = TRUE),
+      label = "- Bankruptcy",
+      hjust = 0
+    ) +
+    annotate(
+      "text",
+      x = train_end - 0.15,
+      y = min(synth[,4], na.rm = TRUE) * 0.70,
+      label = "Training Period Stopped -",
+      hjust = 1,
+      vjust = 1
+    ) +
+    scale_x_continuous(expand = expansion(mult = c(0.03, 0.20))) +
+    theme(
+      plot.margin = margin(t = 10, r = 60, b = 10, l = 10)
+    )
   
   plot_weight <- barplot(coef(model), names.arg = rownames(as.data.frame(coef(model))), xlab = "Explanatory Variables", ylab = "Weights", main = "Weighting Distribution for Counterfactual", las=2)  
   
@@ -178,15 +191,35 @@ causal <- function(complete, dep, exclude,train_start,train_end,treat_end,series
 month_passengers <- month[,c(tourism_list)]
 temp <- causal(month_passengers, 3,"iceland",'2014-01-01','2019-01-01','2019-12-01','2014-01-01','2019-04-01',.01)
 
-plot <- temp$plot_differences
-ggsave("Main Figures and Tables/dropped_time_series_differences.png", plot = plot, dpi=500)
+
+ggsave(
+  "Main Figures and Tables/dropped_time_series_differences.png",
+  plot = temp$plot_differences,
+  width = 8,
+  height = 6,
+  units = "in",
+  dpi = 500
+)
+
+ggsave(
+  "Main Figures and Tables/dropped_time_series_cumul_difs.png",
+  plot = temp$plot_cumul_differences,
+  width = 8,
+  height = 6,
+  units = "in",
+  dpi = 500
+)
+
+
+#plot <- temp$plot_differences
+#ggsave("Main Figures and Tables/dropped_time_series_differences.png", plot = plot, dpi=500)
 
 plot <- temp$plot_ts
 plot
 ggsave("Main Figures and Tables/no_time_series_plot.png", plot = plot, dpi=500)
 
-plot <- temp$plot_cumul_differences
-ggsave("Main Figures and Tables/dropped_time_series_cumul_difs.png", plot = plot, dpi=500)
+#plot <- temp$plot_cumul_differences
+#ggsave("Main Figures and Tables/dropped_time_series_cumul_difs.png", plot = plot, dpi=500)
 
 
 temp$plot_differences

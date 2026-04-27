@@ -4,6 +4,22 @@ library(tibble)
 library(knitr)
 library(kableExtra)
 
+iceland <- month[,grepl("iceland",names(month))]
+total_in_employment_total_iceland
+
+colnames(iceland)
+
+iceland$total_in_employment_total_iceland
+
+iceland$total_in_employment_total_iceland
+
+iceland$employ
+
+
+month %>% filter(year(date)==2010) %>% summarize(mean(total_tourism_employees_iceland,na.rm=T)/mean(total_in_employment_total_iceland,na.rm=T))
+
+
+
 # helper functions
 pct_change <- function(new, old) {
   ((new - old) / old) * 100
@@ -31,80 +47,80 @@ specialization_raw <- tibble(
   
   `2010` = c(
     year_mean(month, departures_foreign_iceland, 2010) /
-      year_mean(month, all_age_employed_iceland, 2010),
+      year_mean(month, total_in_employment_total_iceland, 2010),
     
-    year_mean(month, employees_tourism_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+    year_mean(month, total_tourism_employees_iceland, 2010) /
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, employees__transport_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, air_employees_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, employees_Accommodation_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, food_bev_employees_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, tour_services_employees_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100,
     
     year_mean(month, other_tourism_employees_iceland, 2010) /
-      year_mean(month, employees_total_iceland, 2010) * 100
+      year_mean(month, total_in_employment_total_iceland, 2010) * 100
   ),
   
   `2018` = c(
     year_mean(month, departures_foreign_iceland, 2018) /
-      year_mean(month, all_age_employed_iceland, 2018),
+      year_mean(month, total_in_employment_total_iceland, 2018),
     
-    year_mean(month, employees_tourism_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+    year_mean(month, total_tourism_employees_iceland, 2018) /
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, employees__transport_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, air_employees_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, employees_Accommodation_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, food_bev_employees_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, tour_services_employees_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100,
     
     year_mean(month, other_tourism_employees_iceland, 2018) /
-      year_mean(month, employees_total_iceland, 2018) * 100
+      year_mean(month, total_in_employment_total_iceland, 2018) * 100
   ),
   
   `2019` = c(
     year_mean(month, departures_foreign_iceland, 2019) /
-      year_mean(month, all_age_employed_iceland, 2019),
+      year_mean(month, total_in_employment_total_iceland, 2019),
     
-    year_mean(month, employees_tourism_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+    year_mean(month, total_tourism_employees_iceland, 2019) /
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, employees__transport_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, air_employees_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, employees_Accommodation_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, food_bev_employees_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, tour_services_employees_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100,
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100,
     
     year_mean(month, other_tourism_employees_iceland, 2019) /
-      year_mean(month, employees_total_iceland, 2019) * 100
+      year_mean(month, total_in_employment_total_iceland, 2019) * 100
   )
 ) %>%
   mutate(

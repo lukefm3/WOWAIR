@@ -39,12 +39,12 @@ file.copy(from = "Main Figures and Tables/time_callibration.png", to   = "Paper/
 # Figure 4: Decline in Airline Passengers
 file.copy(from = "Main Figures and Tables/primary_arrivals_plot.png", to   = "Paper/Figures/Figure 4.png", overwrite = T)
 
-# Figure 5: Monthly Arrivals Relative to Counterfactual 
-file.copy(from = "Main Figures and Tables/arrivals_by_month.png", to   = "Paper/Figures/Figure 5.png", overwrite = T)
+# Figure 5: Impacts on Passenger Counts by Nationality
+file.copy(from = "Main Figures and Tables/passengers_by_nationality.png", to   = "Paper/Figures/Figure 5.png", overwrite = T)
+file.copy(from = "Main Figures and Tables/passenger_nationality.tex", to   = "Paper/Figures/Figure 5b.tex", overwrite = T)
 
-# Figure 6: Impacts on Passenger Counts by Nationality
-file.copy(from = "Main Figures and Tables/passengers_by_nationality.png", to   = "Paper/Figures/Figure 6.png", overwrite = T)
-file.copy(from = "Main Figures and Tables/passenger_nationality.tex", to   = "Paper/Figures/Figure 6b.tex", overwrite = T)
+# Figure 6: Monthly Arrivals Relative to Counterfactual 
+file.copy(from = "Main Figures and Tables/arrivals_by_month.png", to   = "Paper/Figures/Figure 6.png", overwrite = T)
 
 # Figure 7: (combines a .tex and a .png)
 # Figure 7a:
