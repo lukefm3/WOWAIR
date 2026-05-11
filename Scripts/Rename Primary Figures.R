@@ -1,5 +1,43 @@
 # Rename Tables, Markdowns, and Graphics
 
+copy_image_as_jpg <- function(from, to) {
+  jpg_to <- sub("\\.[^.]+$", ".jpg", to)
+  dir.create(dirname(jpg_to), recursive = TRUE, showWarnings = FALSE)
+
+  from_abs <- normalizePath(from, winslash = "\\", mustWork = TRUE)
+  jpg_abs <- normalizePath(jpg_to, winslash = "\\", mustWork = FALSE)
+
+  ps_quote <- function(x) paste0("'", gsub("'", "''", x, fixed = TRUE), "'")
+
+  command <- paste(
+    "Add-Type -AssemblyName System.Drawing;",
+    "$src =", ps_quote(from_abs), ";",
+    "$dst =", ps_quote(jpg_abs), ";",
+    "$img = [System.Drawing.Image]::FromFile($src);",
+    "$bmp = New-Object System.Drawing.Bitmap $img.Width, $img.Height;",
+    "$graphics = [System.Drawing.Graphics]::FromImage($bmp);",
+    "$graphics.Clear([System.Drawing.Color]::White);",
+    "$graphics.DrawImage($img, 0, 0, $img.Width, $img.Height);",
+    "$bmp.Save($dst, [System.Drawing.Imaging.ImageFormat]::Jpeg);",
+    "$graphics.Dispose();",
+    "$bmp.Dispose();",
+    "$img.Dispose();"
+  )
+
+  result <- system2(
+    "powershell",
+    args = c("-NoProfile", "-Command", command),
+    stdout = TRUE,
+    stderr = TRUE
+  )
+
+  if (!file.exists(jpg_to)) {
+    stop("Failed to convert image to jpg: ", from, "\n", paste(result, collapse = "\n"))
+  }
+
+  invisible(jpg_to)
+}
+
 # Table 1: Summary Table
 file.copy(from = "Main Figures and Tables/summary_table.tex", to   = "Paper/Tables/Table 1.tex", overwrite = T)
 
@@ -28,40 +66,40 @@ file.copy(from = "Main Figures and Tables/DID_table.tex", to   = "Paper/Tables/T
 # Figures
 
 # Figure 1: Recent Information Bias
-file.copy(from = "Main Figures and Tables/recent_information_bias.png", to   = "Paper/Figures/Figure 1.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/recent_information_bias.png", to = "Paper/Figures/Figure 1.jpg")
 
 # Figure 2: Posterior Inclusion Probabilities
-file.copy(from = "Main Figures and Tables/coefficients_arrivals_plot.png", to   = "Paper/Figures/Figure 2.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/coefficients_arrivals_plot.png", to = "Paper/Figures/Figure 2.jpg")
 
 # Figure 3: Cumulative effects across pre-periods
-file.copy(from = "Main Figures and Tables/time_callibration.png", to   = "Paper/Figures/Figure 3.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/time_callibration.png", to = "Paper/Figures/Figure 3.jpg")
 
 # Figure 4: Decline in Airline Passengers
-file.copy(from = "Main Figures and Tables/primary_arrivals_plot.png", to   = "Paper/Figures/Figure 4.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/primary_arrivals_plot.png", to = "Paper/Figures/Figure 4.jpg")
 
 # Figure 5: Impacts on Passenger Counts by Nationality
-file.copy(from = "Main Figures and Tables/passengers_by_nationality.png", to   = "Paper/Figures/Figure 5.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/passengers_by_nationality.png", to = "Paper/Figures/Figure 5.jpg")
 file.copy(from = "Main Figures and Tables/passenger_nationality.tex", to   = "Paper/Figures/Figure 5b.tex", overwrite = T)
 
 # Figure 6: Monthly Arrivals Relative to Counterfactual 
-file.copy(from = "Main Figures and Tables/arrivals_by_month.png", to   = "Paper/Figures/Figure 6.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/arrivals_by_month.png", to = "Paper/Figures/Figure 6.jpg")
 
 # Figure 7: (combines a .tex and a .png)
 # Figure 7a:
-file.copy(from = "Main Figures and Tables/national_labor_plot.png", to   = "Paper/Figures/Figure 7a.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/national_labor_plot.png", to = "Paper/Figures/Figure 7a.jpg")
 
 # Figure 7b:
 file.copy(from = "Main Figures and Tables/comprehensive_labor_impact_table.tex", to   = "Paper/Figures/Figure 7b.tex", overwrite = T)
 
 # Figure 8: Monthly Differences in Estimated and Realized Labor Levels
-file.copy(from = "Main Figures and Tables/sectoral_labor_impact_plot.png", to   = "Paper/Figures/Figure 8.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/sectoral_labor_impact_plot.png", to = "Paper/Figures/Figure 8.jpg")
 
 # Figure 9: Projected Monthly Differences (No Time-Series Elements)
-file.copy(from = "Main Figures and Tables/dropped_time_series_differences.png", to   = "Paper/Figures/Figure 9.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/dropped_time_series_differences.png", to = "Paper/Figures/Figure 9.jpg")
 
 
 # Figure 10: Projected Cumulative Differences (No Time-Series Elements)
-file.copy(from = "Main Figures and Tables/dropped_time_series_cumul_difs.png", to   = "Paper/Figures/Figure 10.png", overwrite = T)
+copy_image_as_jpg(from = "Main Figures and Tables/dropped_time_series_cumul_difs.png", to = "Paper/Figures/Figure 10.jpg")
 
 
 # Move any .png or .tex files from folder a to folder B: 
@@ -71,7 +109,13 @@ to   <- file.path(getwd(), "Additional Tables and Figures")
 # create destination if it doesn't exist
 dir.create(to, showWarnings = FALSE)
 
-files <- list.files(from, pattern = "\\.(png|tex|md)$", full.names = TRUE)
+image_files <- list.files(from, pattern = "\\.(png|jpg|jpeg)$", full.names = TRUE, ignore.case = TRUE)
+text_files <- list.files(from, pattern = "\\.(tex|md)$", full.names = TRUE, ignore.case = TRUE)
 
-file.rename(files, file.path(to, basename(files)))
+invisible(lapply(image_files, function(path) {
+  out <- file.path(to, paste0(tools::file_path_sans_ext(basename(path)), ".jpg"))
+  copy_image_as_jpg(path, out)
+}))
+
+file.rename(text_files, file.path(to, basename(text_files)))
 
