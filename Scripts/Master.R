@@ -49,7 +49,6 @@ source("Scripts/Placebos - Compile.R")
 # Removes TS Elements
 # source("Scripts/No TS Elements.R")
 
-
 # Additional Analysis - Not included in paper
 source("Scripts/Exports and Imports.R")
 source("Scripts/Hotel Stays.R")
@@ -62,5 +61,7 @@ source("Scripts/Transportation Measures.R")
 
 source("Scripts/Rename Primary Figures.R")
 
+# Render anonymized and non-anonymized paper PDFs
+source("Scripts/Render LaTeX Outputs.R")
 
 

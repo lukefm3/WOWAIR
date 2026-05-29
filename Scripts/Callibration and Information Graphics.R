@@ -467,9 +467,9 @@ latex_table <- paste0(
   "    \\bottomrule\n",
   "    \\end{tabular}%\n",
   "}\n",
-  "\\begin{tablenotes}\\tiny[Source:]\n",
-  "1. Globefeed.com, 2. US Naval Observatory Astronomical Applications Department, 3. Nordicstatistics.org, 4. World Bank\n",
-  "\\end{tablenotes}\n",
+  "\\begin{minipage}{\\textwidth}\n",
+  "\\tiny \\textit{Source:} 1. Globefeed.com, 2. US Naval Observatory Astronomical Applications Department, 3. Nordicstatistics.org, 4. World Bank\n",
+  "\\end{minipage}\n",
   "\\end{table}\n"
 )
 

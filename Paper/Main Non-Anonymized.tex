@@ -256,48 +256,7 @@ Figure \ref{fig:primary_arrivals_plot} shows the estimated counterfactual number
 \caption{Impacts on Passenger Counts by Nationality}
 \label{fig:fig_table_grouped}
 \centering
-
-% Top: the image (full width)
-\begin{subfigure}[t]{\textwidth}
-    \centering
-    {\scriptsize \subcaption{Monthly Difference in Observed and Estimated Departures by Nationality}}
-    \vspace{-0.5em} % tighten space (works well here)
-    \includegraphics[width=\linewidth]{Figures/Figure 5.jpg}
-    
-    \vspace{0.25em}
-
-  \parbox{\linewidth}    {\footnotesize \textit{Note:} Difference between observed and estimated counterfactual unemployed persons (left) and unemployment rate (right). Passengers represent departures, measured as the number of persons passing through international security.}
-    \label{fig:Departures_by_Nationality_img}
-\end{subfigure}
-
-\medskip
-
-% Bottom: the table (full width)
-\begin{subfigure}[t]{\textwidth}
-  \centering
-  {\scriptsize \subcaption{Passenger Summary by Nationality}}
-  \vspace{0.25em} % add a little breathing room
-  \begingroup
-    \makeatletter
-    \let\origtable\table \let\origendtable\endtable \let\origcaption\caption
-    \renewenvironment{table}[1][]{\begin{center}}{\end{center}}
-    \renewcommand{\caption}[2][]{}
-    \makeatother
-
-    \resizebox{\textwidth}{!}{%
-      \input{Paper/Figures/Figure 5b}%
-    }
-
-    \let\table\origtable \let\endtable\origendtable \let\caption\origcaption
-  \endgroup
-
-  % Left-aligned note under the table
-  \vspace{0.25em}
-  \parbox{\linewidth}{\footnotesize \textit{Note:} Data show observed vs. estimated counterfactual passenger departures by nationality.}
-  
-  \label{tab:passenger_nationality_inline}
-\end{subfigure}
-
+\includegraphics[width=\textwidth]{Figures/Figure 5.jpg}
 \end{figure}
 
 Figure \ref{fig:monthly_diff_plot} further illustrates these effects by expressing departures as a percentage deviation from the model’s counterfactual estimate. The solid line shows observed monthly differences, with the shaded region indicating the 95\% credible interval. Departures remained consistently below expected levels by roughly 15–25\% throughout 2019, with little sign of recovery even toward the end of the year. The table below the plot reports actual, predicted, and difference values for each month, reinforcing that the gap persisted across all months following the collapse.
@@ -324,44 +283,7 @@ Having shown that the closure of WOW Air resulted in a significant tourism suppl
 \centering
 \caption{National labor impacts}
 \label{fig:national_labor_grouped}
-% --- Top panel: summary table ---
-\begin{subfigure}[t]{\textwidth}
-  \centering
-  {\scriptsize \subcaption{Comprehensive Labor Impacts}}
-  \vspace{0.25em} % small, consistent gap
-  \begingroup
-    \makeatletter
-    \let\origtable\table
-    \let\origendtable\endtable
-    \let\origcaption\caption
-    \renewenvironment{table}[1][]{\begin{center}}{\end{center}}
-    \renewcommand{\caption}[2][]{}
-    \makeatother
-
-    \input{Figures/Figure 7b.tex}
-
-    \let\table\origtable
-    \let\endtable\origendtable
-    \let\caption\origcaption
-  \endgroup
-
-  \vspace{0.25em}
-  \label{fig:Labor_Impacts_National_inline}
-\end{subfigure}
-
-\medskip
-
-% --- Bottom panel: plot ---
-\begin{subfigure}[t]{\textwidth}
-  \centering
-  {\scriptsize \subcaption{Monthly Effect on Unemployed Persons and Unemployment Rate}}
-  \vspace{-0.5em} % slightly tighter above the graphic (like your previous figure)
-  \includegraphics[width=0.9\linewidth]{Figures/Figure 7a.jpg}
-
-  \vspace{0.25em}
-  \parbox{\linewidth}{\footnotesize \textit{Note:} Solid line shows observed values and dashed line shows the synthetic counterfactual. Monthly series are plotted as differences relative to the counterfactual}
-  \label{fig:national_labor_plot}
-\end{subfigure}
+\includegraphics[width=\textwidth]{Figures/Figure 7.jpg}
 \end{figure}
 
 \paragraph{Sectoral employment effects.}
