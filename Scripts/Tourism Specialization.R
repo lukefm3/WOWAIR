@@ -4,21 +4,30 @@ library(tibble)
 library(knitr)
 library(kableExtra)
 
-iceland <- month[,grepl("iceland",names(month))]
-total_in_employment_total_iceland
+required_specialization_cols <- c(
+  "date",
+  "departures_foreign_iceland",
+  "total_in_employment_total_iceland",
+  "total_tourism_employees_iceland",
+  "employees__transport_iceland",
+  "air_employees_iceland",
+  "employees_Accommodation_iceland",
+  "food_bev_employees_iceland",
+  "tour_services_employees_iceland",
+  "other_tourism_employees_iceland"
+)
 
-colnames(iceland)
+if (!exists("month") || !all(required_specialization_cols %in% names(month))) {
+  source("Scripts/Setup and Data.R")
+}
 
-iceland$total_in_employment_total_iceland
-
-iceland$total_in_employment_total_iceland
-
-iceland$employ
-
-
-month %>% filter(year(date)==2010) %>% summarize(mean(total_tourism_employees_iceland,na.rm=T)/mean(total_in_employment_total_iceland,na.rm=T))
-
-
+missing_specialization_cols <- setdiff(required_specialization_cols, names(month))
+if (length(missing_specialization_cols) > 0) {
+  stop(
+    "Tourism Specialization.R is missing required columns: ",
+    paste(missing_specialization_cols, collapse = ", ")
+  )
+}
 
 # helper functions
 pct_change <- function(new, old) {

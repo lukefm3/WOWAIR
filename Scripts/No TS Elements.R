@@ -247,7 +247,7 @@ tabular_only <- kable(
   format = "latex",
   booktabs = FALSE,
   escape = FALSE,
-  align = "l|l|r|r|r|r",
+  align = c("l", "l", "r", "r", "r", "r"),
   col.names = c(
     "\\textbf{Model Used}",
     "Loss Percent",
@@ -346,7 +346,7 @@ tabular_only <- kable(
   format = "latex",
   booktabs = FALSE,
   escape = FALSE,
-  align = "l|l|r|r|r|r",
+  align = c("l", "l", "r", "r", "r", "r"),
   col.names = c(
     "\\textbf{Model Used}",
     "Loss Percent",

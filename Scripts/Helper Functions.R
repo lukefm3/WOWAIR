@@ -32,18 +32,45 @@ table_func <- function(results, name) {
 
 table_func_avg_yoy <- function(results, name) {
   rmse <- calculate_rmse(results)
+  quantity_digits <- ifelse(grepl("Rate", name), 2, 0)
   temp_table <- tibble(
     "Relative Impact (%)" = round(results$summary$RelEffect[1]*100,2),
-    "Average Monthly Impact [ISK (M)]" = round(results$summary$AbsEffect[1],0),
-    "Monthly Avg. Predicted" = round(results$summary$Pred[1],0),
-    "Monthly Avg. Observed" = round(results$summary$Actual[1],0),
+    "Average Monthly Impact [ISK (M)]" = round(results$summary$AbsEffect[1], quantity_digits),
+    "Monthly Avg. Predicted" = round(results$summary$Pred[1], quantity_digits),
+    "Monthly Avg. Observed" = round(results$summary$Actual[1], quantity_digits),
     "YoY Actual Change (%)" = round((results$summary$Actual[1] / mean(impact_temp$series$response[c((length(impact_temp$series$response)-20):(length(impact_temp$series$response)-12)),1], na.rm = TRUE) - 1) * 100, 4),
     "p-value" = round(results$summary$p[1],4),
-    "RMSE (priors)" = round(rmse,0)
+    "RMSE (priors)" = round(rmse, quantity_digits)
   )
   row.names(temp_table)[1] <- name
   # Return the table
   return(temp_table)
+}
+
+# Manuscript labor table/interval plot: nine-month cumulative relative effect.
+# Keep table_func_avg_yoy unchanged for the other tables that use it.
+table_func_avg_yoy_v2 <- function(results, name) {
+  response <- as.numeric(results$series$response)
+  prior_year_mean <- mean(response[(length(response) - 20):(length(response) - 12)], na.rm = TRUE)
+  predicted_total <- as.numeric(results$summary$Pred[2])
+  quantity_digits <- if (grepl("Rate", name)) 2 else 0
+  if (!is.finite(predicted_total) || predicted_total == 0) {
+    stop("Invalid cumulative counterfactual for ", name)
+  }
+  out <- data.frame(
+    "Relative Impact (%)" = 100 * as.numeric(results$summary$AbsEffect[2]) / predicted_total,
+    "95% CI Lower (%)" = 100 * as.numeric(results$summary$AbsEffect.lower[2]) / predicted_total,
+    "95% CI Upper (%)" = 100 * as.numeric(results$summary$AbsEffect.upper[2]) / predicted_total,
+    "YoY Actual Change (%)" = 100 * (as.numeric(results$summary$Actual[1]) / prior_year_mean - 1),
+    "Average Monthly Impact" = round(as.numeric(results$summary$AbsEffect[1]), quantity_digits),
+    "Monthly Avg. Predicted" = round(as.numeric(results$summary$Pred[1]), quantity_digits),
+    "Monthly Avg. Observed" = round(as.numeric(results$summary$Actual[1]), quantity_digits),
+    "p-value" = as.numeric(results$summary$p[1]),
+    "RMSE (priors)" = round(calculate_rmse(results), quantity_digits),
+    check.names = FALSE
+  )
+  row.names(out) <- name
+  out
 }
 
 
@@ -69,6 +96,8 @@ table_func_avg <- function(results, name) {
 
 
 coeff_plot <- function(var, name_cex = 1.3, title_cex = 1.2) {
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par), add = TRUE)
   
   # ---- Compute stats ----
   out <- rbind(
@@ -90,6 +119,7 @@ coeff_plot <- function(var, name_cex = 1.3, title_cex = 1.2) {
   out$clean_name <- toupper(gsub("_", " ", out$variable))
   
   # ---- Left plot: Inclusion probabilities ----
+  par(mar = c(3, 24, 3, 1))
   inclusion <- barplot(
     out$inclusion_probability,
     horiz = TRUE,
@@ -104,6 +134,7 @@ coeff_plot <- function(var, name_cex = 1.3, title_cex = 1.2) {
        las = 1, cex.axis = name_cex, tick = FALSE)
   
   # ---- Right plot: Coefficient magnitudes ----
+  par(mar = c(3, 4, 3, 2))
   barplot(
     out$mean_magnitude,
     horiz = TRUE,
@@ -162,7 +193,7 @@ make_sidewaystable <- function(kable_obj,
       "\\\\end\\{sidewaystable\\}",
       paste0(
         "\\\\begin{tablenotes}\n",
-        "\\\\footnotesize\n",
+        "\\\\scriptsize\n",
         "\\\\item \\\\textit{Note:} ", notes, "\n",
         "\\\\end{tablenotes}\n",
         "\\\\end{sidewaystable}"

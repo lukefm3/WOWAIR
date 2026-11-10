@@ -42,7 +42,7 @@ col_names <- c(
 latex_tbl <- vc_out %>%
   kable(
     format = "latex",
-    booktabs = TRUE,
+    booktabs = FALSE,
     escape = FALSE,              # keep the *** in the table
     caption = "Impacts and Fit Statistics",
     col.names = col_names,
@@ -55,32 +55,43 @@ latex_tbl <- vc_out %>%
 latex_tbl<- paste(latex_tbl, collapse = "\n")
 
 # keep only the tabular block
-latex_tbl <- str_extract(latex_tbl, "(?s)\\\\begin\\{tabular\\}\\[t\\]\\{lrrrrrr\\}.*?\\\\end\\{tabular\\}")
+latex_tbl <- str_extract(
+  latex_tbl,
+  "(?s)\\\\begin\\{tabular\\}(?:\\[[^]]*\\])?\\{[^}]+\\}.*?\\\\end\\{tabular\\}"
+)
+if (is.na(latex_tbl)) {
+  stop("Could not extract tabular block for placebo impact table.")
+}
+latex_tbl <- str_replace(
+  latex_tbl,
+  "\\\\begin\\{tabular\\}(?:\\[[^]]*\\])?\\{[^}]+\\}",
+  "\\\\begin{tabular}[t]{l|l|r|r|r|r|r}"
+)
 
 # remove all \addlinespace
 latex_tbl <- str_replace_all(latex_tbl, "\n\\\\addlinespace", "")
 latex_tbl <- str_replace_all(latex_tbl, "\\\\addlinespace\n", "")
 latex_tbl<- str_replace_all(latex_tbl, "\\\\addlinespace", "")
 
-# change All Indicators to Fish Landings and insert midrule before it
+# change All Indicators to Fish Landings and insert a section line before it
 latex_tbl <- str_replace_all(
   latex_tbl,
   "\nAll Indicators",
-  "\n\\\\midrule\nFish Landings"
+  "\n\\\\hline\nFish Landings"
 )
 
-# insert midrule before Greenland
+# insert a section line before Greenland
 latex_tbl <- str_replace_all(
   latex_tbl,
   "\\\\\\\\\nGreenland",
-  "\\\\\\\\\n\\\\midrule\nGreenland"
+  "\\\\\\\\\n\\\\hline\nGreenland"
 )
 
-# insert midrule before Impact in January 2018
+# insert a section line before Impact in January 2018
 latex_tbl <- str_replace_all(
   latex_tbl,
   "\\\\\\\\\nImpact in January 2018",
-  "\\\\\\\\\n\\\\midrule\nImpact in January 2018"
+  "\\\\\\\\\n\\\\hline\nImpact in January 2018"
 )
 
 # escape % so LaTeX compiles

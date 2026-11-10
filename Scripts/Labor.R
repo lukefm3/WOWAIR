@@ -29,6 +29,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 w1 <- plot(impact_temp, "pointwise") + ggtitle("Taxable Wages") + panel_theme + ylab("ISK (M)")
 
 w1_table <- table_func_avg_yoy(impact_temp, "Taxable Wages (Full Economy)")
+w1_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Taxable Wages (Full Economy)")
 
 #
 
@@ -85,9 +86,10 @@ post.period <- as.yearmon(c("2019-04-01", "2020-01-01"))
 impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
 
 #plot(impact_temp) + ggtitle("Taxable Wages Post-Bankruptcy")
-u1 <- plot(impact_temp, "pointwise") + ggtitle("Unemployed Persons") +   panel_theme + ylab("ISK (M)")
+u1 <- plot(impact_temp, "pointwise") + ggtitle("Unemployed Persons") +   panel_theme + ylab("Persons")
 
 u1_table <- table_func_avg_yoy(impact_temp, "Unemployed Persons")
+u1_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Unemployed Persons")
 
 #
 
@@ -118,15 +120,16 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 u2 <- plot(impact_temp, "pointwise") + ggtitle("Unemployment Rate") +   panel_theme + ylab("Unemployment Rate (%)")
 
 u2_table <- table_func_avg_yoy(impact_temp, "Unemployment Rate")
+u2_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Unemployment Rate")
 
 #
 
 #{r Total Employed Net of Air Economy Wide}
 complete <- month %>%
-  mutate(net_tourism_employees_iceland = employees_tourism_iceland - air_employees_iceland) %>%
-  select(any_of(labor_list), net_tourism_employees_iceland)
+  mutate(total_employees_net_air_iceland = registered_employed_persons_iceland - air_employees_iceland) %>%
+  select(any_of(labor_list), total_employees_net_air_iceland)
 
-complete2 <- as.data.frame(complete[,151]) # change this to pick out your indicator, then just pick your dates
+complete2 <- complete %>% select(total_employees_net_air_iceland)
 colnames(complete2) <- "Employees_total_iceland"
 # list of remaining columns
 icelandcolumns <- grep('iceland', colnames(complete))
@@ -235,6 +238,7 @@ w2 <- plot(impact_temp, "pointwise") +
 
 
 w2_table <- table_func_avg_yoy(impact_temp, "Tourism Wages")
+w2_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Tourism Wages")
 #
 
 #{r Tourism Employees}
@@ -264,6 +268,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 e2 <- plot(impact_temp, "pointwise") + ggtitle("Tourism Employees") +    panel_theme + ylab("Persons")
 
 e2_table <- table_func_avg_yoy(impact_temp, "Tourism Employees")
+e2_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Tourism Employees")
 
 #
 
@@ -293,6 +298,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 e3 <- plot(impact_temp, "pointwise") + ggtitle("Transportation Employees") + panel_theme + ylab("Persons")
 
 e3_table <- table_func_avg_yoy(impact_temp, "Transportation Employees")
+e3_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Transportation Employees")
 
 #
 
@@ -351,6 +357,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 w3 <- plot(impact_temp, "pointwise") + ggtitle("Transportation Wages") + panel_theme + ylab("ISK (M)")
 
 w3_table <- table_func_avg_yoy(impact_temp, "Transportation Wages")
+w3_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Transportation Wages")
 
 #
 
@@ -384,6 +391,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 temp1 <- plot(impact_temp, "pointwise") + ggtitle("Total Employees") +  panel_theme + ylab("Persons")
 
 temp1_table <- table_func_avg_yoy(impact_temp, "Total Non-Tourism Employees")
+temp1_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Total Non-Tourism Employees")
 
 #
 
@@ -415,6 +423,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 w4 <- plot(impact_temp, "pointwise") + ggtitle("Accommodation Wages") +  panel_theme + ylab("ISK (M)")
 
 w4_table <- table_func_avg_yoy(impact_temp, "Accommodation Wages")
+w4_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Accommodation Wages")
 
 #
 
@@ -443,6 +452,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period)
 
 e4 <- plot(impact_temp, "pointwise") + ggtitle("Accommodation Employees") +  panel_theme + ylab("Persons")
 e4_table <- table_func_avg_yoy(impact_temp, "Accommodation Employees")
+e4_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Accommodation Employees")
 
 #
 
@@ -451,7 +461,7 @@ complete <- month %>%
   mutate(net_tourism_employees_iceland = employees_tourism_iceland - air_employees_iceland) %>%
   select(any_of(labor_list), net_tourism_employees_iceland)
 
-complete2 <- as.data.frame(complete[,151]) # change this to pick out your indicator, then just pick your dates
+complete2 <- complete %>% select(net_tourism_employees_iceland)
 colnames(complete2) <- "tourism_employees_iceland"
 # list of remaining columns
 icelandcolumns <- grep('iceland', colnames(complete))
@@ -473,9 +483,44 @@ post.period <- as.yearmon(c("2019-04-01", "2020-01-01"))
 impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
 
 
-net_employees <- plot(impact_temp, "pointwise") + ggtitle("Tourism Employees Excl. Airline") + panel_theme + ylab("Persons")
+net_employees <- plot(impact_temp, "pointwise") + ggtitle("Tourism Employees, Net of Air Transport") + panel_theme + ylab("Persons")
 
-net_employees_table <- table_func_avg_yoy(impact_temp, "Tourism Employees Excl. Airline")
+net_employees_table <- table_func_avg_yoy(impact_temp, "Tourism Employees, Net of Air Transport")
+net_employees_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Tourism Employees, Net of Air Transport")
+
+
+#
+
+#{r Transportation Minus Air Employees}
+complete <- month %>%
+  mutate(transportation_net_air_employees_iceland = employees__transport_iceland - air_employees_iceland) %>%
+  select(any_of(labor_list), transportation_net_air_employees_iceland)
+
+complete2 <- complete %>% select(transportation_net_air_employees_iceland)
+colnames(complete2) <- "transportation_employees_iceland"
+# list of remaining columns
+icelandcolumns <- grep('iceland', colnames(complete))
+complete <- complete[,-c(icelandcolumns)]
+
+complete <- cbind(complete,complete2)
+
+complete <- complete %>% filter(date > '2013-12-31') %>% filter(date < '2019-12-31')
+
+complete <- complete[ , colSums(is.na(complete))==0] %>% relocate(transportation_employees_iceland) %>% relocate(date)
+
+temp <- ts(data = complete[-c(1)],
+           start = 2014,
+           end = 2020,
+           frequency = 12) %>% head(-1)
+pre.period <- as.yearmon(c("2014-01-01", "2019-01-01"))
+post.period <- as.yearmon(c("2019-04-01", "2020-01-01"))
+
+impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5000, nseasons = 12, season.duration = 1))
+
+transport_net_air_employees <- plot(impact_temp, "pointwise") + ggtitle("Transportation Employees, Net of Air Transport") + panel_theme + ylab("Persons")
+
+transport_net_air_employees_table <- table_func_avg_yoy(impact_temp, "Transportation Employees, Net of Air Transport")
+transport_net_air_employees_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Transportation Employees, Net of Air Transport")
 
 
 #
@@ -491,7 +536,7 @@ ggsave(  "Main Figures and Tables/sectoral_labor_impact_plot.png",
          dpi = 500
 )
 
-variable_choice <- rbind(e2_table,net_employees_table,e3_table, e4_table)
+variable_choice <- rbind(e2_table,net_employees_table,e3_table,transport_net_air_employees_table, e4_table)
 
 variable_choice$Indicator <- rownames(variable_choice)
 variable_choice <- variable_choice %>% select(Indicator, everything())
@@ -594,6 +639,7 @@ plot(impact_temp) + ggtitle("Airline Employees Post-Bankruptcy")
 e6 <- plot(impact_temp, "pointwise") + ggtitle("Air Employees") +  panel_theme + ylab("Persons")
 
 e6_table <- table_func_avg_yoy(impact_temp, "Air Transport Employees")
+e6_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Air Transport Employees")
 #
 
 #{r Accommodation Employees _ Type2}
@@ -650,6 +696,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 
 e8 <- plot(impact_temp, "pointwise") + ggtitle("Food & Beverage Employees") +  panel_theme + ylab("Persons")
 e8_table <- table_func_avg_yoy(impact_temp, "Food & Beverage Employees")
+e8_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Food & Beverage Employees")
 #
 
 #{r tour_services_employees_iceland }
@@ -709,6 +756,7 @@ impact_temp <- CausalImpact(temp,pre.period,post.period, model.args=list(niter=5
 e10 <- plot(impact_temp, "pointwise") + ggtitle("Other Tourism Employees") +   panel_theme + ylab("Persons")
 
 e10_table <- table_func_avg_yoy(impact_temp, "Other Tourism Employees")
+e10_table_v2 <- table_func_avg_yoy_v2(impact_temp, "Other Tourism Employees")
 
 
 #
@@ -894,7 +942,7 @@ make_combined_latex_4(t_nat, t_sect, t_tour, t_wage, outfile = "combined_table.t
 
 #{r Comprehensive Labor Impact Table}
 variable_choice <- rbind(u1_table, u2_table, temp1_table,
-                         e2_table, net_employees_table, e3_table, e4_table, e6_table,e8_table, e10_table,
+                         e2_table, net_employees_table, e3_table, transport_net_air_employees_table, e4_table, e6_table,e8_table, e10_table,
                          w1_table, w2_table, w3_table, w4_table)
 
 variable_choice$Indicator <- rownames(variable_choice)
@@ -921,8 +969,22 @@ fix_indicator <- function(x) {
   x %>%
     str_replace("^Accommodation", "Accommodation") %>%
     str_replace("^Accommodation", "Accommodation") %>%
+    str_replace("Taxable Wages \\(Full Economy\\)", "Taxable Wages, Full Economy") %>%
+    str_replace("Tourism Employees Excl\\. Airline", "Tourism Employees, Net of Air Transport") %>%
     str_replace("Accommodation Employees", "Accommodation Employees") %>%
     str_replace("Accommodation Wages", "Accommodation Wages")
+}
+
+format_whole <- function(x) {
+  formatC(round(as.numeric(x)), format = "d", big.mark = ",")
+}
+
+format_decimal <- function(x, digits = 2) {
+  formatC(as.numeric(x), format = "f", digits = digits, big.mark = ",")
+}
+
+format_labor_quantity <- function(x, indicator) {
+  ifelse(indicator == "Unemployment Rate", format_decimal(x, 2), format_whole(x))
 }
 
 # --- shape your vc_out -----------------------------------------------------
@@ -937,8 +999,13 @@ df <- vc_out %>%
   ) %>%
   mutate(
     Indicator = fix_indicator(Indicator),
-    Indicator = latex_escape(Indicator),
-    `YoY Actual Change (%)` = round(`YoY Actual Change (%)`,2)
+    `Average Monthly Impact` = format_labor_quantity(`Average Monthly Impact`, Indicator),
+    `Monthly Avg. Predicted` = format_labor_quantity(`Monthly Avg. Predicted`, Indicator),
+    `Monthly Avg. Observed` = format_labor_quantity(`Monthly Avg. Observed`, Indicator),
+    `YoY Actual Change (%)` = format_decimal(`YoY Actual Change (%)`, 2),
+    `p-value` = formatC(as.numeric(`p-value`), format = "f", digits = 4),
+    `RMSE (priors)` = format_labor_quantity(`RMSE (priors)`, Indicator),
+    Indicator = latex_escape(Indicator)
   ) %>%
   select(
     Indicator, `Relative Impact (%)`, `Average Monthly Impact`,
@@ -951,21 +1018,19 @@ nat_ord <- c("Unemployed Persons", "Unemployment Rate")
 
 sector_emp_ord <- c(
   "Tourism Employees",
-  "Tourism Employees Net Airline",
+  "Tourism Employees, Net of Air Transport",
   "Transportation Employees",
-  "Accommodation Employees"
-)
-
-tourism_spec_ord <- c(
-  "Air Transport Employees",
+  "Transportation Employees, Net of Air Transport",
   "Accommodation Employees",
+  "Air Transport Employees",
   "Food \\& Beverage Employees",
-  "Tour Services Employees",
   "Other Tourism Employees"
 )
 
+tourism_spec_ord <- character()
+
 wage_ord <- c(
-  "Taxable Wages (Full Economy)",
+  "Taxable Wages, Full Economy",
   "Tourism Wages",
   "Transportation Wages",
   "Accommodation Wages"
@@ -992,41 +1057,163 @@ make_block <- function(title, d) {
   if (nrow(d) == 0) return(character())
   c(
     "\\midrule",
-    paste0("\\multicolumn{8}{c}{", title, "} \\\\"),
+    paste0("\\multicolumn{8}{l}{\\textbf{", title, "}}\\\\"),
     "\\midrule",
     apply(d, 1, row_to_tex)
   )
 }
 
-header_line <- "Indicator & Relative Impact (\\%) & Average Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & YoY Actual Change (\\%) & p-value & RMSE (priors)\\\\"
+header_line <- "Outcome & Relative Impact (\\%) & Avg. Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & YoY Actual Change (\\%) & p-value & RMSE (pre-period)\\\\"
 
 lines <- c(
-  "\\begin{table}",
-  "%\\caption{Foregone Labor Growth}",
-  "\\resizebox{\\textwidth}{!}{%",
+  "\\begin{table}[htbp]",
   "\\centering",
-  "\\begin{tabular}[t]{l|l|r|r|r|r|r|r}",
-  "\\midrule",
+  "\\caption{Labor-Market and Wage Effects of the WOW Air Bankruptcy}\\label{tab:labor_impact}",
+  "\\resizebox{\\textwidth}{!}{%",
+  "\\begin{tabular}[t]{lrrrrrrr}",
+  "\\toprule",
   header_line,
-  make_block("National Level Indicators", t_nat),
-  make_block("Employed Persons By Job Sector", t_sect),
-  make_block("Tourism-Specific Indicators", t_tour),
+  make_block("National labor indicators", t_nat),
+  make_block("Employment by sector", t_sect),
   "\\midrule",
-  "\\midrule",
-  paste0("\\multicolumn{8}{c}{Taxable Wages By Job Sector, ISK (M)} \\\\"),
+  paste0("\\multicolumn{8}{l}{\\textbf{Taxable wages by sector, ISK millions}}\\\\"),
   "\\midrule",
   if (nrow(t_wage) > 0) apply(t_wage, 1, row_to_tex) else character(),
-  "\\midrule",
+  "\\bottomrule",
   "\\end{tabular}",
   "}",
-  "\\label{tab:labor_impact}",
   "\\begin{minipage}{\\textwidth}",
-  "\\tiny",
-  "Notes: The number of stars denotes the significance level of the coefficient estimates based on p-values, where *** indicates $p<0.01$, ** indicates $p<0.05$, and * indicates $p<0.10$.",
+  "\\raggedright\\scriptsize \\textit{Note:} Average monthly impact is measured in workers for employment and unemployment, percentage points for the unemployment rate, and ISK millions for wages. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.",
   "\\end{minipage}",
   "\\end{table}"
 )
 
 writeLines(lines, "Main Figures and Tables/comprehensive_labor_impact_table.tex")
+
+# Manuscript labor table and nine-month relative-impact CI figure.
+# Compact manuscript version with nine-month cumulative relative-impact CIs.
+# The original table objects and formatter above remain available elsewhere.
+labor_v2 <- rbind(
+  u1_table_v2, u2_table_v2, e2_table_v2, net_employees_table_v2,
+  e3_table_v2, transport_net_air_employees_table_v2, e4_table_v2,
+  e6_table_v2, e8_table_v2, e10_table_v2,
+  w1_table_v2, w2_table_v2, w3_table_v2, w4_table_v2
+)
+labor_v2$Outcome <- rownames(labor_v2)
+labor_v2$Outcome <- fix_indicator(labor_v2$Outcome)
+# Existing R sessions may hold v2 rows created before the monthly columns were
+# restored. Fill those fields from the already fitted legacy rows, with no refit.
+monthly_columns <- c("Average Monthly Impact", "Monthly Avg. Predicted",
+                     "Monthly Avg. Observed", "RMSE (priors)")
+if (!all(monthly_columns %in% names(labor_v2))) {
+  labor_old <- rbind(
+    u1_table, u2_table, e2_table, net_employees_table, e3_table,
+    transport_net_air_employees_table, e4_table, e6_table, e8_table,
+    e10_table, w1_table, w2_table, w3_table, w4_table
+  )
+  old_outcomes <- fix_indicator(rownames(labor_old))
+  old_rows <- match(labor_v2$Outcome, old_outcomes)
+  if (anyNA(old_rows)) stop("Could not align the saved monthly labor results.")
+  monthly_source <- grep("^Average Monthly Impact", names(labor_old), value = TRUE)[1]
+  labor_v2[["Average Monthly Impact"]] <- labor_old[[monthly_source]][old_rows]
+  for (column in monthly_columns[-1]) {
+    labor_v2[[column]] <- labor_old[[column]][old_rows]
+  }
+}
+# The legacy LaTeX table order escapes "&"; the model labels are still plain text.
+labor_order <- c(nat_ord, gsub("\\", "", sector_emp_ord, fixed = TRUE), wage_ord)
+missing_labor_outcomes <- setdiff(labor_order, labor_v2$Outcome)
+if (length(missing_labor_outcomes)) {
+  stop("Missing v2 labor outcomes: ", paste(missing_labor_outcomes, collapse = ", "))
+}
+labor_v2 <- labor_v2[match(labor_order, labor_v2$Outcome), , drop = FALSE]
+
+# Produce a standalone interval figure alongside this table's generation code.
+labor_plot <- labor_v2
+labor_plot$Outcome <- factor(labor_plot$Outcome, levels = rev(labor_plot$Outcome))
+labor_plot$Panel <- factor(
+  rep(c("National labor indicators", "Employment by sector", "Taxable wages by sector"),
+      times = c(length(nat_ord), length(sector_emp_ord), length(wage_ord))),
+  levels = c("National labor indicators", "Employment by sector", "Taxable wages by sector")
+)
+labor_panel_dividers <- data.frame(
+  Panel = factor(
+    c("National labor indicators", "Employment by sector"),
+    levels = levels(labor_plot$Panel)
+  ),
+  yintercept = 0.25
+)
+labor_interval_plot <- ggplot2::ggplot(
+  labor_plot, ggplot2::aes(x = `Relative Impact (%)`, y = Outcome)
+) +
+  ggplot2::geom_vline(xintercept = 0, color = "grey60", linewidth = 0.4) +
+  ggplot2::geom_segment(
+    ggplot2::aes(x = `95% CI Lower (%)`, xend = `95% CI Upper (%)`, yend = Outcome),
+    linewidth = 0.8, color = "#326987"
+  ) +
+  ggplot2::geom_point(size = 2.5, color = "#B23A48") +
+  ggplot2::geom_hline(
+    data = labor_panel_dividers,
+    ggplot2::aes(yintercept = yintercept),
+    inherit.aes = FALSE, color = "grey85", linewidth = 0.4
+  ) +
+  ggplot2::facet_grid(Panel ~ ., scales = "free_y", space = "free_y") +
+  ggplot2::coord_cartesian(clip = "off") +
+  ggplot2::scale_x_continuous(labels = function(x) paste0(x, "%")) +
+  ggplot2::labs(
+    x = "Cumulative relative impact (%)", y = NULL
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    panel.grid.major.y = ggplot2::element_blank(),
+    panel.spacing.y = grid::unit(1.2, "lines"),
+    strip.text.y = ggplot2::element_text(angle = 0, face = "bold"),
+    plot.title = ggplot2::element_text(face = "bold"),
+    plot.margin = ggplot2::margin(12, 18, 12, 12)
+  )
+ggplot2::ggsave(
+  "Main Figures and Tables/labor_relative_impact_95ci.png",
+  labor_interval_plot, width = 10, height = 8, units = "in", dpi = 300
+)
+
+format_labor_percent <- function(x) formatC(x, format = "f", digits = 2)
+format_labor_p <- function(x) formatC(x, format = "f", digits = 4)
+format_labor_quantity_v2 <- function(x, outcome) {
+  if (grepl("Rate", outcome)) formatC(as.numeric(x), format = "f", digits = 2) else
+    formatC(round(as.numeric(x)), format = "d", big.mark = ",")
+}
+labor_row_v2 <- function(row) {
+  paste0(
+    latex_escape(row[["Outcome"]]), " & ",
+    format_labor_percent(as.numeric(row[["Relative Impact (%)"]])),
+    pstars(as.numeric(row[["p-value"]])), "\\hspace{0.6em}[",
+    formatC(as.numeric(row[["95% CI Lower (%)"]]), format = "f", digits = 1), ", ",
+    formatC(as.numeric(row[["95% CI Upper (%)"]]), format = "f", digits = 1), "] & ",
+    format_labor_percent(as.numeric(row[["YoY Actual Change (%)"]])), " & ",
+    format_labor_quantity_v2(row[["Average Monthly Impact"]], row[["Outcome"]]), " & ",
+    format_labor_quantity_v2(row[["Monthly Avg. Predicted"]], row[["Outcome"]]), " & ",
+    format_labor_quantity_v2(row[["Monthly Avg. Observed"]], row[["Outcome"]]), " & ",
+    format_labor_p(as.numeric(row[["p-value"]])), " & ",
+    format_labor_quantity_v2(row[["RMSE (priors)"]], row[["Outcome"]]), " \\\\"
+  )
+}
+labor_block_v2 <- function(title, rows) {
+  c("\\midrule", paste0("\\multicolumn{8}{l}{\\textbf{", title, "}}\\\\"),
+    apply(rows, 1, labor_row_v2))
+}
+labor_lines_v2 <- c(
+  "\\begin{table}[htbp]", "\\centering",
+  "\\caption{Labor-Market and Wage Effects of the WOW Air Bankruptcy}\\label{tab:labor_impact}",
+  "\\resizebox{\\textwidth}{!}{%", "\\begin{tabular}[t]{llrrrrrr}", "\\toprule",
+  "Outcome & \\shortstack[l]{9-Month Relative Impact (\\%)\\\\and 95\\% CI} & YoY Actual Change (\\%) & Avg. Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & p-value & RMSE (pre-period)\\\\",
+  labor_block_v2("National labor indicators", labor_v2[seq_along(nat_ord), , drop = FALSE]),
+  labor_block_v2("Employment by sector", labor_v2[length(nat_ord) + seq_along(sector_emp_ord), , drop = FALSE]),
+  labor_block_v2("Taxable wages by sector", labor_v2[length(nat_ord) + length(sector_emp_ord) + seq_along(wage_ord), , drop = FALSE]),
+  "\\bottomrule", "\\end{tabular}", "}",
+  "\\begin{minipage}{\\textwidth}",
+  "\\raggedright\\scriptsize \\textit{Note:} Relative impact and its 95\\% interval compare cumulative observed and counterfactual outcomes over April--December 2019. YoY actual change compares the observed nine-month average with the same months of 2018. Monthly quantities and RMSE are measured in workers for employment and unemployment, percentage points for the unemployment rate, and ISK millions for wages. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.",
+  "\\end{minipage}", "\\end{table}"
+)
+writeLines(labor_lines_v2, "Main Figures and Tables/comprehensive_labor_impact_table.tex")
 
 #

@@ -1,42 +1,34 @@
-\begin{table}
-%\caption{Foregone Labor Growth}
-\resizebox{\textwidth}{!}{%
+\begin{table}[htbp]
 \centering
-\begin{tabular}[t]{l|l|r|r|r|r|r|r}
+\caption{Labor-Market and Wage Effects of the WOW Air Bankruptcy}\label{tab:labor_impact}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}[t]{llrrrrrr}
+\toprule
+Outcome & \shortstack[l]{9-Month Relative Impact (\%)\\and 95\% CI} & YoY Actual Change (\%) & Avg. Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & p-value & RMSE (pre-period)\\
 \midrule
-Indicator & Relative Impact (\%) & Average Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & YoY Actual Change (\%) & p-value & RMSE (priors)\\
+\multicolumn{8}{l}{\textbf{National labor indicators}}\\
+Unemployed Persons & 46.21***\hspace{0.6em}[22.8, 72.3] & 32.62 & 2,613 & 5,654 & 8,267 & 0.0006 & 1,263 \\
+Unemployment Rate & 46.93***\hspace{0.6em}[22.4, 73.2] & 30.82 & 1.30 & 2.76 & 4.06 & 0.0014 & 0.66 \\
 \midrule
-\multicolumn{8}{c}{National Level Indicators} \\
+\multicolumn{8}{l}{\textbf{Employment by sector}}\\
+Tourism Employees & -8.12***\hspace{0.6em}[-10.8, -5.4] & -3.93 & -6,010 & 73,995 & 67,985 & 0.0002 & 739 \\
+Tourism Employees, Net of Air Transport & -6.61***\hspace{0.6em}[-9.3, -3.3] & -2.49 & -4,498 & 68,072 & 63,574 & 0.0010 & 765 \\
+Transportation Employees & -16.54***\hspace{0.6em}[-20.6, -12.6] & -12.03 & -2,653 & 16,034 & 13,382 & 0.0002 & 200 \\
+Transportation Employees, Net of Air Transport & -11.94***\hspace{0.6em}[-16.2, -6.7] & -6.99 & -1,217 & 10,187 & 8,971 & 0.0002 & 162 \\
+Accommodation Employees & -10.61***\hspace{0.6em}[-15.3, -4.9] & -4.09 & -2,052 & 19,345 & 17,293 & 0.0010 & 567 \\
+Air Transport Employees & -25.90***\hspace{0.6em}[-31.0, -20.9] & -20.76 & -1,542 & 5,953 & 4,411 & 0.0002 & 116 \\
+Food \& Beverage Employees & -8.47***\hspace{0.6em}[-13.9, -3.2] & -6.55 & -939 & 11,084 & 10,144 & 0.0002 & 167 \\
+Other Tourism Employees & 0.53\hspace{0.6em}[-8.3, 9.4] & 23.09 & 169 & 32,143 & 32,311 & 0.4539 & 36 \\
 \midrule
-Unemployed Persons & 48.62*** & 2613 & 5654 & 8267 & 32.62 & 0.0006 & 1263 \\
-Unemployment Rate & 49.70*** &    1 &    3 &    4 & 30.82 & 0.0014 &    1 \\
-\midrule
-\multicolumn{8}{c}{Employed Persons By Job Sector} \\
-\midrule
-Tourism Employees & -8.11*** & -6010 & 73995 & 67985 &  -3.93 & 2e-04 & 739 \\
-Transportation Employees & -16.50*** & -2653 & 16034 & 13382 & -12.03 & 2e-04 & 200 \\
-Accommodation Employees & -10.49*** & -2052 & 19345 & 17293 &  -4.09 & 1e-03 & 567 \\
-\midrule
-\multicolumn{8}{c}{Tourism-Specific Indicators} \\
-\midrule
-Air Transport Employees & -25.89*** & -1542 &  5953 &  4411 & -20.76 & 0.0002 & 116 \\
-Accommodation Employees & -10.49*** & -2052 & 19345 & 17293 &  -4.09 & 0.0010 & 567 \\
-Food \& Beverage Employees & -8.41*** &  -939 & 11084 & 10144 &  -6.55 & 0.0012 & 167 \\
-Other Tourism Employees & 0.66 &   169 & 32143 & 32311 &  23.09 & 0.4656 &  36 \\
-\midrule
-\midrule
-\multicolumn{8}{c}{Taxable Wages By Job Sector, ISK (M)} \\
-\midrule
-Taxable Wages (Full Economy) & -2.45 & -2916 & 117902 & 114986 &  3.20 & 0.1175 & 1233 \\
-Tourism Wages & -6.28*** & -2065 &  32710 &  30644 &  0.03 & 0.0055 &  390 \\
-Transportation Wages & -15.65*** & -1564 &   9960 &   8397 & -8.48 & 0.0002 &  159 \\
-Accommodation Wages & -6.97** &  -448 &   6319 &   5871 &  1.57 & 0.0101 &  131 \\
-\midrule
+\multicolumn{8}{l}{\textbf{Taxable wages by sector}}\\
+Taxable Wages, Full Economy & -2.47\hspace{0.6em}[-6.5, 1.8] & 3.20 & -2,916 & 117,902 & 114,986 & 0.1175 & 1,233 \\
+Tourism Wages & -6.31***\hspace{0.6em}[-11.5, -1.6] & 0.03 & -2,065 & 32,710 & 30,644 & 0.0042 & 390 \\
+Transportation Wages & -15.70***\hspace{0.6em}[-21.5, -9.6] & -8.48 & -1,564 & 9,960 & 8,397 & 0.0002 & 159 \\
+Accommodation Wages & -7.08***\hspace{0.6em}[-12.7, -1.2] & 1.57 & -448 & 6,319 & 5,871 & 0.0075 & 131 \\
+\bottomrule
 \end{tabular}
 }
-\label{tab:labor_impact}
 \begin{minipage}{\textwidth}
-\tiny
-Notes: The number of stars denotes the significance level of the coefficient estimates based on p-values, where *** indicates $p<0.01$, ** indicates $p<0.05$, and * indicates $p<0.10$.
+\raggedright\scriptsize \textit{Note:} Relative impact and its 95\% interval compare cumulative observed and counterfactual outcomes over April--December 2019. YoY actual change compares the observed nine-month average with the same months of 2018. Monthly quantities and RMSE are measured in workers for employment and unemployment, percentage points for the unemployment rate, and ISK millions for wages. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.
 \end{minipage}
 \end{table}

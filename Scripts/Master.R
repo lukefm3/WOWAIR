@@ -13,13 +13,13 @@ source("Scripts/Helper Functions.R")
 source("Scripts/Tourism Specialization.R")
 source("Scripts/Callibration and Information Graphics.R")
 
-
 # Primary Outcome
 source("Scripts/Primary Arrivals.R")
-source("Scripts/Remove TS Elements.R") # keep here so it can use the outputs from Primary Arrivals
 source("Scripts/All Arrivals.R")
+source("Scripts/Remove TS Elements.R") # keep here so it can use the preferred BSTS total-passenger output
 
 # Labor Outcomes
+# Labor.R creates the manuscript labor table and relative-impact CI figure.
 source("Scripts/Labor.R")
 
  # Sensitivities
@@ -31,7 +31,6 @@ source("Scripts/Country Choice.R")
 
 # TWFE
 source("Scripts/DID.R")
-
 
 # Placebo Analysis
 # Other Countries
@@ -53,6 +52,16 @@ source("Scripts/Placebos - Compile.R")
 source("Scripts/Exports and Imports.R")
 source("Scripts/Hotel Stays.R")
 source("Scripts/Transportation Measures.R")
+source("Scripts/Additional Outcome Tables.R")
+
+
+# Additional Analysis - Response to Referees:
+# Passengers By Nationality:
+# This script creates the nationality route and confidence-interval figure.
+source("Scripts/Passengers by Nationality.R")
+
+# Flight Counts US
+source("Scripts/BTS T100 Monthly Airline Traffic.R")
 
 # Testing to see if results are carried by one to 2 indicators only 
 # i.e., removing ONLY arrivals from other countries as predictors
@@ -61,7 +70,5 @@ source("Scripts/Transportation Measures.R")
 
 source("Scripts/Rename Primary Figures.R")
 
-# Render anonymized and non-anonymized paper PDFs
-source("Scripts/Render LaTeX Outputs.R")
-
-
+# Make a Word-friendly Excel copy of the paper tables.
+source("Scripts/Export Tables to Excel.R")

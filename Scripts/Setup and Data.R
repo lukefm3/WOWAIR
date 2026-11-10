@@ -236,13 +236,9 @@ pstars <- function(p) dplyr::case_when(
 
 
 # Columns defined by column number rather than name (not ideal, but grand-fathered)
-
 iceland_list <- c(1,grep('iceland', colnames(month)))
 passenger_list <- c(iceland_list,7,72,122,123) # for Non-Iceland Countries
 tourism_list <- c(iceland_list,8:10,70:72,119,122:131,172,173)
 labor_list <- c(iceland_list,2:5,51:53,56,59,62,65,79:107,120,121,132:170)
 accounting_list <- c(iceland_list,2,5,38,39,41,42,51,102,120,121,137,146,159,160,167,174:179)
 other_list <- c(iceland_list,44:48,171:173)
-
-
-

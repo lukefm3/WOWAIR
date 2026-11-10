@@ -41,13 +41,12 @@ ggsave(
 )
 
 # Create the plot
-png("Main Figures and Tables/coefficients_arrivals_plot.png", width = 1200, height = 600)
+png("Main Figures and Tables/coefficients_arrivals_plot.png", width = 2600, height = 900)
 par(
   mfrow = c(1, 2),
-  oma = c(1, 2, 1, 6),     # more outer margin on RIGHT
-  mar = c(2, 6, 2, 4)      # smaller left, bigger right
+  oma = c(1, 3, 1, 4)
 )
-coeff_plot(impact_temp, name_cex = 1.3, title_cex = 1.25)
+coeff_plot(impact_temp, name_cex = 1.15, title_cex = 1.25)
 dev.off()
 
 

@@ -21,6 +21,9 @@ Thumbs.db
 *.synctex.gz
 *.toc
 
+# Literature PDFs
+New Literature Papers/
+
 # Optional: ignore very large or private raw data
 # raw_data/
 # data/confidential/

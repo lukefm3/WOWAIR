@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\caption{Demographic Labor-Market Effects of the WOW Air Bankruptcy}\label{tab:demographic_labor_impact}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}[t]{lrrrrrrr}
+\toprule
+Outcome & Relative Impact (\%) & Avg. Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & YoY Actual Change (\%) & p-value & RMSE (pre-period)\\
+\midrule
+Employed Persons, Age 15--24 & -4.81* & -1,464 & 29,698 & 28,233 & -5.64 & 0.0663 & 1,082 \\
+Employed Persons, Age 25--74 & -0.22 & -384 & 167,784 & 167,400 & 1.67 & 0.4308 & 1,915 \\
+Unemployed Persons, Age 16--24 & 38.92** & 805 & 2,306 & 3,111 & 27.85 & 0.0182 & 654 \\
+Unemployed Persons, Age 25--74 & 81.78*** & 2,196 & 2,960 & 5,156 & 35.67 & 0.0002 & 974 \\
+Unemployment Rate, Age 16--24 & 50.96*** & 3.21 & 6.97 & 10.18 & 37.13 & 0.0038 & 2.03 \\
+Unemployment Rate, Age 25--74 & 83.25*** & 1.28 & 1.72 & 3.00 & 33.00 & 0.0002 & 0.61 \\
+Employment Net of Tourism, National & -1.22** & -1,755 & 143,134 & 141,379 & 0.17 & 0.0212 & 853 \\
+Employment Net of Tourism, Immigrant & -3.12* & -874 & 27,533 & 26,659 & 4.06 & 0.0786 & 346 \\
+Tourism Employment, National & -13.92*** & -3,060 & 21,901 & 18,841 & -11.10 & 0.0002 & 414 \\
+Tourism Employment, Immigrant & -10.10*** & -1,140 & 11,134 & 9,994 & 0.48 & 0.0033 & 248 \\
+\bottomrule
+\end{tabular}
+}
+\begin{minipage}{\textwidth}
+\raggedright\scriptsize \textit{Note:} Rows report available age and national-or-immigrant employment outcomes from the monthly data. Gender-specific employment fields were not present in the working monthly dataset. Average monthly impact is measured in workers for employment and unemployment rows and percentage points for unemployment-rate rows. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.
+\end{minipage}
+\end{table}

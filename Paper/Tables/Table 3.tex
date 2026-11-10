@@ -1,25 +1,34 @@
-\begin{tabular}[t]{l|l|l|l|l|l}
-\hline
-Indicator & 2010 & 2018 & 2019 & \% Change, 2010-2018 & \% Change, 2018-2019\\
-\hline
-\multicolumn{6}{l}{\textbf{\textbf{Tourists per Worker}}}\\
-\hline
-\hspace{1em}\textbf{Monthly Foreign Visitors Per Worker} & \textbf{0.24} & \textbf{0.99} & \textbf{0.85} & \textbf{314.61\%} & \textbf{-14.10\%}\\
-\hline
-\multicolumn{6}{l}{\textbf{\textbf{Employment Breakdown By Tourism Sector}}}\\
-\hline
-\hspace{1em}\textbf{Tourism Employees as \% of All Employees} & \textbf{7.88\%} & \textbf{14.84\%} & \textbf{13.96\%} & \textbf{88.41\%} & \textbf{-5.97\%}\\
-\hline
-\hspace{1em}Transportation Employees as \% of All Employees & 5.18\% & 7.56\% & 6.85\% & 45.81\% & -9.40\%\\
-\hline
-\hspace{1em}Air Transport Employees as \% of All Employees & 1.46\% & 2.72\% & 2.28\% & 86.67\% & -16.17\%\\
-\hline
-\hspace{1em}Accommodation Employees as \% of All Employees & 5.42\% & 8.98\% & 8.66\% & 65.88\% & -3.54\%\\
-\hline
-\hspace{1em}Food and Bev Employees as \% of All Employees & 3.91\% & 5.48\% & 5.16\% & 40.41\% & -5.84\%\\
-\hline
-\hspace{1em}Tour Services Employees as \% of All Employees & 0.60\% & 1.98\% & 1.97\% & 232.45\% & -0.49\%\\
-\hline
-\hspace{1em}Other Tourism Employees as \% of All Employees & 0.63\% & 1.45\% & 1.35\% & 130.35\% & -6.64\%\\
-\hline
+\begin{table}[htbp]
+\centering
+\caption{Labor-Market and Wage Effects of the WOW Air Bankruptcy}\label{tab:labor_impact}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}[t]{llrrrrrr}
+\toprule
+Outcome & \shortstack[l]{9-Month Relative Impact (\%)\\and 95\% CI} & YoY Actual Change (\%) & Avg. Monthly Impact & Monthly Avg. Predicted & Monthly Avg. Observed & p-value & RMSE (pre-period)\\
+\midrule
+\multicolumn{8}{l}{\textbf{National labor indicators}}\\
+Unemployed Persons & 46.21***\hspace{0.6em}[22.8, 72.3] & 32.62 & 2,613 & 5,654 & 8,267 & 0.0006 & 1,263 \\
+Unemployment Rate & 46.93***\hspace{0.6em}[22.4, 73.2] & 30.82 & 1.30 & 2.76 & 4.06 & 0.0014 & 0.66 \\
+\midrule
+\multicolumn{8}{l}{\textbf{Employment by sector}}\\
+Tourism Employees & -8.12***\hspace{0.6em}[-10.8, -5.4] & -3.93 & -6,010 & 73,995 & 67,985 & 0.0002 & 739 \\
+Tourism Employees, Net of Air Transport & -6.61***\hspace{0.6em}[-9.3, -3.3] & -2.49 & -4,498 & 68,072 & 63,574 & 0.0010 & 765 \\
+Transportation Employees & -16.54***\hspace{0.6em}[-20.6, -12.6] & -12.03 & -2,653 & 16,034 & 13,382 & 0.0002 & 200 \\
+Transportation Employees, Net of Air Transport & -11.94***\hspace{0.6em}[-16.2, -6.7] & -6.99 & -1,217 & 10,187 & 8,971 & 0.0002 & 162 \\
+Accommodation Employees & -10.61***\hspace{0.6em}[-15.3, -4.9] & -4.09 & -2,052 & 19,345 & 17,293 & 0.0010 & 567 \\
+Air Transport Employees & -25.90***\hspace{0.6em}[-31.0, -20.9] & -20.76 & -1,542 & 5,953 & 4,411 & 0.0002 & 116 \\
+Food \& Beverage Employees & -8.47***\hspace{0.6em}[-13.9, -3.2] & -6.55 & -939 & 11,084 & 10,144 & 0.0002 & 167 \\
+Other Tourism Employees & 0.53\hspace{0.6em}[-8.3, 9.4] & 23.09 & 169 & 32,143 & 32,311 & 0.4539 & 36 \\
+\midrule
+\multicolumn{8}{l}{\textbf{Taxable wages by sector}}\\
+Taxable Wages, Full Economy & -2.47\hspace{0.6em}[-6.5, 1.8] & 3.20 & -2,916 & 117,902 & 114,986 & 0.1175 & 1,233 \\
+Tourism Wages & -6.31***\hspace{0.6em}[-11.5, -1.6] & 0.03 & -2,065 & 32,710 & 30,644 & 0.0042 & 390 \\
+Transportation Wages & -15.70***\hspace{0.6em}[-21.5, -9.6] & -8.48 & -1,564 & 9,960 & 8,397 & 0.0002 & 159 \\
+Accommodation Wages & -7.08***\hspace{0.6em}[-12.7, -1.2] & 1.57 & -448 & 6,319 & 5,871 & 0.0075 & 131 \\
+\bottomrule
 \end{tabular}
+}
+\begin{minipage}{\textwidth}
+\raggedright\scriptsize \textit{Note:} Relative impact and its 95\% interval compare cumulative observed and counterfactual outcomes over April--December 2019. YoY actual change compares the observed nine-month average with the same months of 2018. Monthly quantities and RMSE are measured in workers for employment and unemployment, percentage points for the unemployment rate, and ISK millions for wages. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.
+\end{minipage}
+\end{table}

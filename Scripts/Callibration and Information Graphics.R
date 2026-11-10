@@ -457,7 +457,7 @@ body_text <- paste(body_rows, collapse = "\n")
 latex_table <- paste0(
   "\\begin{table}[htbp]\n",
   "\\centering\n",
-  "\\caption{Forecasted Change in Tourism From Different Coefficient Groups}\\label{tab:summary_table}\n",
+  "\\caption{Observed Characteristics of Treated and Potential Control Countries}\\label{tab:comparison_units}\n",
   "\\resizebox{\\textwidth}{!}{%\n",
   "\\begin{tabular}{lcccccccc}\n",
   "    \\toprule\n",

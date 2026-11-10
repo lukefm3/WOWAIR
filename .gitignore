@@ -1,0 +1,52 @@
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# LaTeX build files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Literature PDFs
+New Literature Papers/
+
+# Optional: ignore very large or private raw data
+# raw_data/
+# data/confidential/
+
+# Local artifacts
+/.codex/
+/.agents/
+AGENTS.md
+*.py
+*.pyc
+*.pyo
+*.ipynb
+__pycache__/
+.venv/
+.RDataTmp
+desktop.ini
+/tmp/
+/Paper.zip
+/Reviewer Comments.docx
+/Reviewer Comments.pdf
+/Rplots.pdf
+/Figure 2.png
+/hotel_impact_plot.png
+/vehicle_impact_plot.png
+/*.bib
+nationality_model_checkpoint.rds

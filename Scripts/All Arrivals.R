@@ -87,11 +87,47 @@ passenger_tables <- rbind(total_t, national_t, foreign_t)
 passenger_tables$Indicator <- rownames(passenger_tables)
 passenger_tables <- passenger_tables %>% select(Indicator, everything())
 
+passenger_pstars <- function(p) {
+  ifelse(p < 0.01, "***", ifelse(p < 0.05, "**", ifelse(p < 0.10, "*", "")))
+}
+
+format_whole <- function(x) {
+  formatC(round(as.numeric(x)), format = "d", big.mark = ",")
+}
+
+passenger_display <- passenger_tables %>%
+  rename(
+    `Passenger Series` = Indicator,
+    `RMSE (pre-period)` = `RMSE (priors)`
+  ) %>%
+  mutate(
+    `Relative Impact (%)` = sprintf(
+      "%.2f%s",
+      as.numeric(`Relative Impact (%)`),
+      passenger_pstars(as.numeric(`p-value`))
+    ),
+    `9-Month Cumulative Impact` = format_whole(`9-Month Cumulative Impact`),
+    `95% CI Upper` = format_whole(`95% CI Upper`),
+    `95% CI Lower` = format_whole(`95% CI Lower`),
+    `p-value` = formatC(as.numeric(`p-value`), format = "f", digits = 4),
+    `RMSE (pre-period)` = format_whole(`RMSE (pre-period)`)
+  ) %>%
+  select(
+    `Passenger Series`, `Relative Impact (%)`, `9-Month Cumulative Impact`,
+    `95% CI Upper`, `95% CI Lower`, `p-value`, `RMSE (pre-period)`
+  )
+
 latex_out <- kable(
-  passenger_tables,
-  caption = "Forecasted Change in Departures by Nationality",
+  passenger_display,
   format = "latex",
-  row.names = FALSE
+  booktabs = TRUE,
+  escape = FALSE,
+  row.names = FALSE,
+  col.names = c(
+    "Passenger Series", "Relative Impact (\\%)", "9-Month Cumulative Impact",
+    "95\\% CI Upper", "95\\% CI Lower", "p-value", "RMSE (pre-period)"
+  ),
+  align = c("l", rep("r", 6))
 )
 
 # Split into lines
@@ -109,5 +145,23 @@ latex_lines <- latex_lines[
 writeLines(
   latex_lines,
   "Main Figures and Tables/passenger_nationality.tex"
+)
+
+passenger_table <- c(
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\caption{Passenger Effects of the WOW Air Bankruptcy}\\label{tab:passenger_impact}",
+  "\\resizebox{\\textwidth}{!}{%",
+  latex_lines,
+  "}",
+  "\\begin{minipage}{\\textwidth}",
+  "\\raggedright\\scriptsize \\textit{Note:} Relative impact is the April--December 2019 difference between observed and counterfactual departures divided by the counterfactual. Stars denote statistical significance: *** $p<0.01$, ** $p<0.05$, * $p<0.10$.",
+  "\\end{minipage}",
+  "\\end{table}"
+)
+
+writeLines(
+  passenger_table,
+  "Main Figures and Tables/passenger_impact_table.tex"
 )
 

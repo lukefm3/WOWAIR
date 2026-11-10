@@ -257,28 +257,42 @@ fmt_p <- function(x) {
 
 
 
-# pull the post-period summary values from CausalImpact
-bsts_summary <- impact_temp$summary
+# Use the preferred BSTS total-passenger estimates reported in Figure 5b.
+# When Master.R is run, All Arrivals.R creates total_t immediately before this script.
+if (exists("total_t")) {
+  post_months <- 9
+  preferred_cumulative_impact <- as.numeric(total_t[["9-Month Cumulative Impact"]])
 
-# compute RMSPE from pre-period prediction errors
-series_df <- as.data.frame(impact_temp$series)
-series_df$date <- as.Date(paste0("01 ", rownames(series_df)), format = "%d %b %Y")
+  temp_bsts <- list(
+    loss_percent      = as.numeric(total_t[["Relative Impact (%)"]]) / 100,
+    monthly_impact    = preferred_cumulative_impact / post_months,
+    cumulative_impact = preferred_cumulative_impact,
+    p_value           = as.numeric(total_t[["p-value"]]),
+    root_mspe         = as.numeric(total_t[["RMSE (priors)"]])
+  )
+} else {
+  # Fallback for sourcing this file by itself after Primary Arrivals.R.
+  bsts_summary <- impact_temp$summary
 
-pre_start <- as.Date("2014-01-01")
-pre_end   <- as.Date("2019-01-01")
+  series_df <- as.data.frame(impact_temp$series)
+  series_df$date <- as.Date(paste0("01 ", rownames(series_df)), format = "%d %b %Y")
 
-bsts_rmspe <- series_df %>%
-  filter(date >= pre_start, date <= pre_end) %>%
-  summarize(rmspe = sqrt(mean((response - point.pred)^2, na.rm = TRUE))) %>%
-  pull(rmspe)
+  pre_start <- as.Date("2014-01-01")
+  pre_end   <- as.Date("2019-01-01")
 
-temp_bsts <- list(
-  loss_percent      = bsts_summary$RelEffect[1],
-  monthly_impact    = bsts_summary$AbsEffect[1],
-  cumulative_impact = bsts_summary$AbsEffect[2],
-  p_value           = bsts_summary$p[1],
-  root_mspe         = bsts_rmspe
-)
+  bsts_rmspe <- series_df %>%
+    filter(date >= pre_start, date <= pre_end) %>%
+    summarize(rmspe = sqrt(mean((response - point.pred)^2, na.rm = TRUE))) %>%
+    pull(rmspe)
+
+  temp_bsts <- list(
+    loss_percent      = bsts_summary$RelEffect[1],
+    monthly_impact    = bsts_summary$AbsEffect[1],
+    cumulative_impact = bsts_summary$AbsEffect[2],
+    p_value           = bsts_summary$p[1],
+    root_mspe         = bsts_rmspe
+  )
+}
 
 
 
@@ -315,7 +329,7 @@ tabular_only <- kable(
   format = "latex",
   booktabs = FALSE,
   escape = FALSE,
-  align = "l|l|r|r|r|r",
+  align = c("l", "l", "r", "r", "r", "r"),
   col.names = c(
     "\\textbf{Model Used}",
     "Loss Percent",

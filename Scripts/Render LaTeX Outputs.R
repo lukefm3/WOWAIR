@@ -78,13 +78,24 @@ render_latex_file <- function(tex_file, paper_dir = "Paper") {
     result <- try(tinytex::latexmk(tex_file, engine = "pdflatex"), silent = TRUE)
 
     if (inherits(result, "try-error")) {
+      error_text <- as.character(result)
+      tlmgr_hint <- if (grepl("tlmgr|repository|pubkey|package installation", error_text, ignore.case = TRUE)) {
+        paste0(
+          "If the error mentions tlmgr, repository verification, or package installation, ",
+          "run this once in R and then rerun the render script:\n\n",
+          "tinytex::tlmgr_repo('https://mirror.ctan.org/systems/texlive/tlnet')\n",
+          "tinytex::tlmgr_update()\n\n"
+        )
+      } else {
+        ""
+      }
+
       stop(
         "TinyTeX failed while rendering ", tex_file, ". ",
-        "If the error mentions tlmgr, repository verification, or package installation, ",
-        "run this once in R and then rerun the render script:\n\n",
-        "tinytex::tlmgr_repo('https://mirror.ctan.org/systems/texlive/tlnet')\n",
-        "tinytex::tlmgr_update()\n\n",
-        as.character(result),
+        "See ", file.path(paper_dir, paste0(tools::file_path_sans_ext(tex_file), ".log")),
+        " for LaTeX details.\n\n",
+        tlmgr_hint,
+        error_text,
         call. = FALSE
       )
     }
